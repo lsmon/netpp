@@ -27,8 +27,6 @@ private:
 
     std::string host;
     std::string port;
-    std::string certFile;
-    std::string keyFile;
     size_t maxConnections;
     size_t numThreads;
 

@@ -5,9 +5,6 @@
 
 HttpEndpoint::HttpEndpoint(std::string httpMethod, std::string path) : httpMethod(std::move(httpMethod)), path(std::move(path)) {}
 
-HttpEndpoint::HttpEndpoint(std::string httpMethod, std::string path, std::string sessionId) : httpMethod(std::move(
-        httpMethod)), path(std::move(path)), sessionId(std::move(sessionId)) {}
-
 std::string HttpEndpoint::getHttpMethod() const {
     return httpMethod;
 }
@@ -24,15 +21,7 @@ void HttpEndpoint::setPath(const std::string &value) {
     path = value;
 }
 
-std::string HttpEndpoint::getSessionId() const {
-    return sessionId;
-}
-
-void HttpEndpoint::setSessionId(const std::string &value) {
-    sessionId = value;
-}
-
 bool HttpEndpoint::operator==(const std::string& str) {
-    std::string key = httpMethod + " " + path + " " + sessionId;
+    std::string key = httpMethod + " " + path;
     return str == key;
 }

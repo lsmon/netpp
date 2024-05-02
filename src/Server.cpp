@@ -5,6 +5,8 @@
 
 #include <utility>
 #include "http/Status.hpp"
+#include "http/HttpRequest.hpp"
+#include "util/String.hpp"
 
 Server::Server(std::string host, std::string port, size_t maxConnections, size_t numThreads)
         : host(std::move(host)), port(std::move(port)), maxConnections(maxConnections),
@@ -43,7 +45,6 @@ void Server::run() {
 
 void Server::setHttpHandler(const std::string &method, const std::string &path, HttpHandler handler) {
     httpHandlers[new HttpEndpoint(method, path)] = std::move(handler);
-//     httpHandlers[method + " " + path] = std::move(handler);
 }
 
 void Server::setWebSocketHandler(WebSocketHandler handler) {
@@ -102,7 +103,7 @@ std::optional<HttpRequest> Server::readHttpRequest(int clientFd) {
 
         bytesRead += n;
 
-        // Check if we've reached the end of headers
+        // Check if we've reached   the end of headers
         char *endOfHeaders = strstr(requestBuffer, "\r\n\r\n");
         if (endOfHeaders) {
             // Null-terminate the request buffer
@@ -129,8 +130,20 @@ std::optional<HttpRequest> Server::readHttpRequest(int clientFd) {
     std::string method, path, version;
     requestLineStream >> method >> path >> version;
 
-    request.method = method;
-    request.path = path;
+    request.setMethod(method);
+
+    std::regex rx("?");
+    
+    std::vector<std::string> split = String::tokenize(path, rx);
+    if (split.size() > 1)
+    {
+        request.setPath(split[0]);
+        request.setQueryString(QueryString::getInstance(split[1]).getMap());
+    } 
+    else
+    {
+        request.setPath(path);
+    }
 
     // Parse the headers
     std::string header;
@@ -139,19 +152,19 @@ std::optional<HttpRequest> Server::readHttpRequest(int clientFd) {
         if (colonPos != std::string::npos) {
             std::string key = header.substr(0, colonPos);
             std::string value = header.substr(colonPos + 2); // Skip the ": "
-            request.headers[key] = value;
+            request.addHeader(key, value);
         }
     }
 
     // Read the request body (if present)
     std::string body(requestBuffer + strlen(requestBuffer) + 4); // Skip the "\r\n\r\n"
-    request.body = body;
+    request.setBody(body);
 
     return request;
 }
 
 void Server::handleHttpRequest(const HttpRequest &request, HttpResponse &response) {
-     auto it = httpHandlers.find(new HttpEndpoint(request.method, request.path));
+     auto it = httpHandlers.find(new HttpEndpoint(request.getMethod(), request.getPath()));
     if (it != httpHandlers.end()) {
         it->second(request, response);
     } else {
