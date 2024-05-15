@@ -31,11 +31,20 @@
 *.out
 *.app
 
-/external/openssl/3.4.0-src/
-/external/openssl/share/
-/external/openssl/misc
-/external/
+/external/openssl/
 /.vscode/
 /build/
 /.idea/
-/cmake-build-debug/
+/cmake-build-*/
+/resources/certs/
+/src/.vscode/
+/logpp/
+/include/config.h
+/include/Date.hpp
+/include/Level.hpp
+/include/Log.hpp
+/include/LogAppender.hpp
+/include/LogProperties.hpp
+/include/PropertiesReader.hpp
+/include/Util.hpp
+/lib/lib_logpp-*
