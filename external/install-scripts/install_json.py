@@ -30,36 +30,36 @@ def build_json():
     print("Building json...")
 
     json_path = os.path.join(root_path, "json")
-    json_build = os.path.join(json_path, "cmake-build-debug")
+    json_build = os.path.join(json_path, "build")
     os.chdir(json_path)
     os.makedirs(json_build, exist_ok=True)
 
     os_name = platform.system()
     print(os_name)
-    run_command("cmake -S " + json_path + " -B " + json_build)
-    run_command("cmake --build " + json_build + " -j 14")
+    run_command("cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -S" + json_path + " -B" + json_build)
+    run_command("cmake --build " + json_build + " --config Debug --target all -j 12 --")
     print("Building completed.")
 
 
 def cpack_json():
     print("Packing json")
     json_path = os.path.join(root_path, "json")
-    json_build = os.path.join(json_path, "cmake-build-debug")
+    json_build = os.path.join(json_path, "build")
     os.chdir(json_build)
-    run_command("cpack -C Debug")
+    run_command("cpack -G ZIP")
 
 
 def install_json():
     print(os.name)
     json_path = os.path.join(root_path, "json")
-    json_build = os.path.join(json_path, "cmake-build-debug")
+    json_build = os.path.join(json_path, "build")
     json_libzip = os.path.join(json_build, "lib_json-0.2.1.1-Darwin.zip")
-    json_libinc = os.path.join(json_build, "lib_json-0.2.1.1-Darwin/include")
+    json_libinc = os.path.join(json_build, "lib_json-0.2.1.1-Darwin/include/json")
     json_lib = os.path.join(json_build, "lib_json-0.2.1.1-Darwin/lib/lib_json-0.2.1.1.a")
     lib_path = os.path.join(root_path, "lib")
     inc_path = os.path.join(root_path, "include")
 
-    with zipfile.ZipFile(json_libzip, 'w') as zip_ref:
+    with zipfile.ZipFile(json_libzip, 'r') as zip_ref:
         zip_ref.extractall(json_build)
     
     if not(os.path.exists(lib_path)):
@@ -69,13 +69,19 @@ def install_json():
 
     if not os.path.exists(inc_path):
         os.makedirs(inc_path)
-        
+    # print("copying " + json_libinc + " to " + inc_path)
+    # shutil.copy_folder(json_libinc, inc_path)
+
     # Iterate over files in json_libinc and copy each file to inc_path
     for filename in os.listdir(json_libinc):
         src_file = os.path.join(json_libinc, filename)
+        
         if os.path.isfile(src_file):  # Only copy files (not directories)
             print("copying " + src_file + " to " + inc_path)
-            shutil.copy(src_file, inc_path)
+            inc_json_path = os.path.join(inc_path, "json")
+            if not os.path.exists(inc_json_path):
+                os.makedirs(inc_json_path)
+            shutil.copy(src_file, inc_json_path)
     
     
 

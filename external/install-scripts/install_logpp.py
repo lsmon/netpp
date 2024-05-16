@@ -30,35 +30,39 @@ def build_logpp():
     print("Building logpp...")
 
     logpp_path = os.path.join(root_path, "logpp")
-    logpp_build = os.path.join(logpp_path, "cmake-build-debug")
+    logpp_build = os.path.join(logpp_path, "build")
     os.chdir(logpp_path)
     os.makedirs(logpp_build, exist_ok=True)
 
     os_name = platform.system()
     print(os_name)
-    run_command("cmake -S " + logpp_path + " -B " + logpp_build)
-    run_command("cmake --build " + logpp_build + " -j 14")
+    # run_command("cmake -S " + logpp_path + " -B " + logpp_build)
+    # run_command("cmake --build " + logpp_build + " -j 14")
+
+    run_command("cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -S" + logpp_path + " -B" + logpp_build)
+    run_command("cmake --build " + logpp_build + " --config Debug --target all -j 12 --")
+
     print("Building completed.")
 
 
 def cpack_logpp():
     print("Packing logpp")
     logpp_path = os.path.join(root_path, "logpp")
-    logpp_build = os.path.join(logpp_path, "cmake-build-debug")
+    logpp_build = os.path.join(logpp_path, "build")
     os.chdir(logpp_build)
-    run_command("cpack -C Debug")
+    run_command("cpack -G ZIP")
 
 
 def install_logpp():
     logpp_path = os.path.join(root_path, "logpp")
-    logpp_build = os.path.join(logpp_path, "cmake-build-debug")
+    logpp_build = os.path.join(logpp_path, "build")
     logpp_libzip = os.path.join(logpp_build, "lib_logpp-0.9.2.5-Darwin.zip")
     logpp_libinc = os.path.join(logpp_build, "lib_logpp-0.9.2.5-Darwin/include")
     logpp_lib = os.path.join(logpp_build, "lib_logpp-0.9.2.5-Darwin/lib/lib_logpp-0.9.2.5.a")
     lib_path = os.path.join(root_path, "lib")
     inc_path = os.path.join(root_path, "include")
 
-    with zipfile.ZipFile(logpp_libzip, 'w') as zip_ref:
+    with zipfile.ZipFile(logpp_libzip, 'r') as zip_ref:
         zip_ref.extractall(logpp_build)
     
     if not(os.path.exists(lib_path)):
