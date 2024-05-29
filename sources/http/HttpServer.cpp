@@ -1,4 +1,4 @@
-#include "Server.hpp"
+#include "http/HttpServer.hpp"
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -8,11 +8,11 @@
 #include "http/HttpRequest.hpp"
 #include "util/String.hpp"
 
-Server::Server(std::string host, std::string port, size_t maxConnections, size_t numThreads)
+HttpServer::HttpServer(std::string host, std::string port, size_t maxConnections, size_t numThreads)
     : host(std::move(host)), port(std::move(port)), maxConnections(maxConnections),
       numThreads(numThreads) {}
 
-void Server::run()
+void HttpServer::run()
 {
     int serverFd = socket(AF_INET, SOCK_STREAM, 0);
     if (serverFd < 0)
@@ -52,18 +52,18 @@ void Server::run()
     }
 }
 
-void Server::setHttpHandler(const std::string &method, const std::string &path, HttpHandler handler)
+void HttpServer::setHttpHandler(const std::string &method, const std::string &path, HttpHandler handler)
 {
     auto endpoint = std::make_shared<HttpEndpoint>(method, path);
     httpHandlers[endpoint] = std::move(handler);
 }
 
-void Server::setWebSocketHandler(WebSocketHandler handler)
+void HttpServer::setWebSocketHandler(WebSocketHandler handler)
 {
     webSocketHandler = std::move(handler);
 }
 
-void Server::runWorker(int serverFd)
+void HttpServer::runWorker(int serverFd)
 {
     while (true)
     {
@@ -89,7 +89,7 @@ void Server::runWorker(int serverFd)
     }
 }
 
-void Server::handleConnection(int clientFd)
+void HttpServer::handleConnection(int clientFd)
 {
     std::stringstream error;
     // Read HTTP request without SSL
@@ -108,7 +108,7 @@ void Server::handleConnection(int clientFd)
     close(clientFd);
 }
 
-std::optional<HttpRequest> Server::readHttpRequest(int clientFd)
+std::optional<HttpRequest> HttpServer::readHttpRequest(int clientFd)
 {
     const int MAX_REQUEST_SIZE = 8192; // Maximum size of the request buffer
     char requestBuffer[MAX_REQUEST_SIZE];
@@ -201,7 +201,7 @@ std::optional<HttpRequest> Server::readHttpRequest(int clientFd)
     return request;
 }
 
-void Server::handleHttpRequest(const HttpRequest &request, HttpResponse &response)
+void HttpServer::handleHttpRequest(const HttpRequest &request, HttpResponse &response)
 {
     auto endpoint = std::make_shared<HttpEndpoint>(request.getMethod(), request.getPath());
     auto it = httpHandlers.find(endpoint);
@@ -218,7 +218,7 @@ void Server::handleHttpRequest(const HttpRequest &request, HttpResponse &respons
     }
 }
 
-void Server::sendHttpResponse(int clientFd, const HttpResponse &response)
+void HttpServer::sendHttpResponse(int clientFd, const HttpResponse &response)
 {
     // Generate HTTP response
     std::string httpResponse = generateHttpResponse(response);
@@ -230,7 +230,7 @@ void Server::sendHttpResponse(int clientFd, const HttpResponse &response)
     }
 }
 
-void Server::handleWebSocketConnection(int clientFd)
+void HttpServer::handleWebSocketConnection(int clientFd)
 {
     // Implement WebSocket handshake and frame processing
     WebSocketFrame frame;
@@ -248,7 +248,7 @@ void Server::handleWebSocketConnection(int clientFd)
     }
 }
 
-bool Server::readWebSocketFrame(int clientFd, WebSocketFrame &frame)
+bool HttpServer::readWebSocketFrame(int clientFd, WebSocketFrame &frame)
 {
     const int MAX_FRAME_SIZE = 8192; // Maximum size of a WebSocket frame
     unsigned char frameBuffer[MAX_FRAME_SIZE];
@@ -330,7 +330,7 @@ bool Server::readWebSocketFrame(int clientFd, WebSocketFrame &frame)
     return true; // Successfully read WebSocket frame
 }
 
-void Server::sendWebSocketFrame(int clientFd, const WebSocketFrame &frame)
+void HttpServer::sendWebSocketFrame(int clientFd, const WebSocketFrame &frame)
 {
     const int MAX_FRAME_SIZE = 8192; // Maximum size of a WebSocket frame
     unsigned char frameBuffer[MAX_FRAME_SIZE];
@@ -370,7 +370,7 @@ void Server::sendWebSocketFrame(int clientFd, const WebSocketFrame &frame)
     }
 }
 
-bool Server::tryAcquireConnection()
+bool HttpServer::tryAcquireConnection()
 {
     std::lock_guard<std::mutex> lock(connectionsMutex);
     if (currentConnections >= maxConnections)
@@ -381,13 +381,13 @@ bool Server::tryAcquireConnection()
     return true;
 }
 
-void Server::releaseConnection()
+void HttpServer::releaseConnection()
 {
     std::lock_guard<std::mutex> lock(connectionsMutex);
     --currentConnections;
 }
 
-std::string Server::generateHttpResponse(const HttpResponse &response)
+std::string HttpServer::generateHttpResponse(const HttpResponse &response)
 {
     std::ostringstream httpResponse;
     httpResponse << "HTTP/1.1 " << response.status << " " << getStatusMessage(response.status) << "\r\n";
@@ -400,7 +400,7 @@ std::string Server::generateHttpResponse(const HttpResponse &response)
     return httpResponse.str();
 }
 
-std::string Server::getStatusMessage(int statusCode)
+std::string HttpServer::getStatusMessage(int statusCode)
 {
     return Status(statusCode).ss.str();
 }

@@ -28,7 +28,7 @@ struct HttpEndpointComparator
     }
 };
 
-class Server
+class HttpServer
 {
 private:
     /**
@@ -136,12 +136,12 @@ public:
      * @param maxConnections Maximum number of simultaneous connections.
      * @param numThreads Number of worker threads.
      */
-    Server(std::string host, std::string port, size_t maxConnections, size_t numThreads);
+    HttpServer(std::string host, std::string port, size_t maxConnections, size_t numThreads);
 
     /**
      * @brief Destroys the ssl ctx instance (if exists) when the Server is destroyed.
      */
-    ~Server() = default;
+    ~HttpServer() = default;
 
     /**
      * @brief Starts the server.

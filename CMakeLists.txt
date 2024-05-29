@@ -15,7 +15,7 @@ message(STATUS "INFO -- CONFIGURE START")
 include(${CMAKE_CURRENT_SOURCE_DIR}/external/CMakeLists.txt)
 message(STATUS "INFO -- CONFIGURE FINISHED")
 
-set(HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/include/Server.hpp
+set(HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/include/http/HttpServer.hpp
             ${CMAKE_CURRENT_SOURCE_DIR}/include/http/HttpMethod.hpp
             ${CMAKE_CURRENT_SOURCE_DIR}/include/http/HttpHandler.hpp
             ${CMAKE_CURRENT_SOURCE_DIR}/include/http/Structures.hpp
@@ -26,7 +26,7 @@ set(HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/include/Server.hpp
             ${CMAKE_CURRENT_SOURCE_DIR}/include/util/String.hpp)
 
 
-set(SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/sources/Server.cpp
+set(SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/HttpServer.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/HttpHandler.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/QueryString.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/HttpRequest.cpp
