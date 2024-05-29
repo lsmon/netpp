@@ -1,4 +1,3 @@
-
 #include "Server.hpp"
 #include "http/HttpMethod.hpp"
 

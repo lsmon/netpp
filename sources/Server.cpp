@@ -54,7 +54,8 @@ void Server::run()
 
 void Server::setHttpHandler(const std::string &method, const std::string &path, HttpHandler handler)
 {
-    httpHandlers[new HttpEndpoint(method, path)] = std::move(handler);
+    auto endpoint = std::make_shared<HttpEndpoint>(method, path);
+    httpHandlers[endpoint] = std::move(handler);
 }
 
 void Server::setWebSocketHandler(WebSocketHandler handler)
@@ -166,7 +167,7 @@ std::optional<HttpRequest> Server::readHttpRequest(int clientFd)
     }
     else
     {
-        request.setPath(path);
+       request.setPath(path);
     }
 
     // Parse the headers
@@ -202,7 +203,10 @@ std::optional<HttpRequest> Server::readHttpRequest(int clientFd)
 
 void Server::handleHttpRequest(const HttpRequest &request, HttpResponse &response)
 {
-    auto it = httpHandlers.find(new HttpEndpoint(request.getMethod(), request.getPath()));
+    auto endpoint = std::make_shared<HttpEndpoint>(request.getMethod(), request.getPath());
+    auto it = httpHandlers.find(endpoint);
+    // auto it = httpHandlers.find(new HttpEndpoint(request.getMethod(), request.getPath()));
+
     if (it != httpHandlers.end())
     {
         it->second(request, response);

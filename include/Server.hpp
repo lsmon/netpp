@@ -14,11 +14,24 @@
 #include <iostream>
 #include <memory>
 #include <map>
+#include "http/HttpRequest.hpp"
+
+struct HttpEndpointComparator
+{
+    bool operator()(const std::shared_ptr<HttpEndpoint> lhs, const std::shared_ptr<HttpEndpoint> rhs) const
+    {
+        if (lhs->getHttpMethod() == rhs->getHttpMethod())
+        {
+            return lhs->getPath() < rhs->getPath();
+        }
+        return lhs->getHttpMethod() < rhs->getHttpMethod();
+    }
+};
 
 class Server
 {
 private:
-   /**
+    /**
      * @brief Defines the type for WebSocket message handler functions.
      * @param frame The WebSocket frame received.
      * @param response The WebSocket frame to be sent in response.
@@ -30,7 +43,8 @@ private:
     size_t maxConnections;
     size_t numThreads;
 
-    std::map<HttpEndpoint*, HttpHandler> httpHandlers;
+    // std::map<HttpEndpoint*, HttpHandler> httpHandlers;
+    std::map<std::shared_ptr<HttpEndpoint>, HttpHandler, HttpEndpointComparator> httpHandlers;
     std::optional<WebSocketHandler> webSocketHandler;
     std::mutex connectionsMutex;
     size_t currentConnections = 0;
@@ -60,7 +74,6 @@ private:
      * @param response The HTTP response to be generated.
      */
     void handleHttpRequest(const HttpRequest &request, HttpResponse &response);
-
 
     /**
      * @brief Sends an HTTP response over a regular socket connection.
@@ -106,7 +119,7 @@ private:
      * @param response The HTTP response object.
      * @return The generated HTTP response string.
      */
-    static std::string generateHttpResponse(const HttpResponse& response);
+    static std::string generateHttpResponse(const HttpResponse &response);
 
     /**
      * @brief Retrieves the HTTP status message for a given status code.
