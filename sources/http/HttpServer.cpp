@@ -167,7 +167,7 @@ std::optional<HttpRequest> HttpServer::readHttpRequest(int clientFd)
     }
     else
     {
-       request.setPath(path);
+        request.setPath(path);
     }
 
     // Parse the headers
@@ -189,13 +189,16 @@ std::optional<HttpRequest> HttpServer::readHttpRequest(int clientFd)
 
     struct sockaddr_storage clientAddr;
     char clientIP[INET6_ADDRSTRLEN];
-    // if (clientAddr.ss_family == AF_INET) {
-    struct sockaddr_in *s = (struct sockaddr_in *)&clientAddr;
-    inet_ntop(AF_INET, &s->sin_addr, clientIP, sizeof(clientIP));
-    // } else {
-    // struct sockaddr_in6* s = (struct sockaddr_in6*)&clientAddr;
-    // inet_ntop(AF_INET6, &s->sin6_addr, clientIP, sizeof(clientIP));
-    // }
+    if (clientAddr.ss_family == AF_INET)
+    {
+        struct sockaddr_in *s = (struct sockaddr_in *)&clientAddr;
+        inet_ntop(AF_INET, &s->sin_addr, clientIP, sizeof(clientIP));
+    }
+    else
+    {
+        struct sockaddr_in6 *s = (struct sockaddr_in6 *)&clientAddr;
+        inet_ntop(AF_INET6, &s->sin6_addr, clientIP, sizeof(clientIP));
+    }
     std::cout << "Accepted connection from " << clientIP << std::endl;
 
     return request;
@@ -205,8 +208,7 @@ void HttpServer::handleHttpRequest(const HttpRequest &request, HttpResponse &res
 {
     auto endpoint = std::make_shared<HttpEndpoint>(request.getMethod(), request.getPath());
     auto it = httpHandlers.find(endpoint);
-    // auto it = httpHandlers.find(new HttpEndpoint(request.getMethod(), request.getPath()));
-
+    
     if (it != httpHandlers.end())
     {
         it->second(request, response);
