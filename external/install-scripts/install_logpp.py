@@ -6,11 +6,21 @@ import zipfile
 import shutil
 
 root_path = ""
+version = ""
+os_type = sys.platform
 
 def run_command(command):
     result = subprocess.run(command, shell=True)
     if result.returncode != 0:
         raise Exception(f"Command '{command}' failed with exit code {result.returncode}.")
+
+
+def check_cloned():
+    # Check if the repository has been cloned
+    os.chdir(root_path)
+    if not os.path.exists("logpp"):
+        return False
+    return True
 
 
 def clone_logpp():
@@ -24,6 +34,26 @@ def clone_logpp():
         run_command("git pull origin main")
         os.chdir("..")
     print("Cloning completed.")
+
+
+def check_latest_version():
+    # Check if the local repository is up to date
+    local_dir = os.path.join(root_path, "logpp")
+    try:
+        subprocess.check_call(["git", "remote", "update"], cwd=local_dir)
+        subprocess.check_call(["git", "status", "--ahead-behind", "origin/main"], cwd=local_dir)
+    except subprocess.CalledProcessError:
+        return False
+    return True
+
+
+def update_repository():
+    # Update the local repository to the latest version
+    local_dir = os.path.join(root_path, "logpp")
+    try:
+        subprocess.check_call(["git", "pull", "origin", "main"], cwd=local_dir)
+    except subprocess.CalledProcessError:
+        print("Error updating repository")
 
 
 def build_logpp():
@@ -56,9 +86,14 @@ def cpack_logpp():
 def install_logpp():
     logpp_path = os.path.join(root_path, "logpp")
     logpp_build = os.path.join(logpp_path, "build")
-    logpp_libzip = os.path.join(logpp_build, "lib_logpp-0.9.2.5-Darwin.zip")
-    logpp_libinc = os.path.join(logpp_build, "lib_logpp-0.9.2.5-Darwin/include")
-    logpp_lib = os.path.join(logpp_build, "lib_logpp-0.9.2.5-Darwin/lib/lib_logpp-0.9.2.5.a")
+    os_postfix = ""
+    if os_type == "linux":
+        os_postfix = "Linux"
+    elif os_type == "darwin":
+        os_postfix = "Darwin"
+    logpp_libzip = os.path.join(logpp_build, f"lib_logpp-{version}-{os_postfix}.zip")
+    logpp_libinc = os.path.join(logpp_build, f"lib_logpp-{version}-{os_postfix}/include")
+    logpp_lib = os.path.join(logpp_build, f"lib_logpp-{version}-{os_postfix}/lib/lib_logpp-{version}.a")
     lib_path = os.path.join(root_path, "lib")
     inc_path = os.path.join(root_path, "include")
 
@@ -83,7 +118,11 @@ def install_logpp():
     
 
 def main():
-    clone_logpp()
+    if not check_cloned():
+        clone_logpp()
+    else:
+        if not check_latest_version():
+            update_repository()
     build_logpp()
     cpack_logpp()
     install_logpp()
@@ -96,7 +135,9 @@ if __name__ == "__main__":
         print("installation root path is needed")
     else:
         root_path = sys.argv[1]
+        version = sys.argv[2]
         print(root_path)
+        print(version)
         main()
 
 
