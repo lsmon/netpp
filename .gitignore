@@ -47,6 +47,7 @@
 /include/LogProperties.hpp
 /include/PropertiesReader.hpp
 /include/Util.hpp
-/include/json
+/include/JSON.hpp
+/include/util/
 /lib/lib_logpp-*
 /sources/.vscode/
