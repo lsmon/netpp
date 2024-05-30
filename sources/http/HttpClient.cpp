@@ -85,7 +85,7 @@ std::string HttpClient::post(const std::string& url, const std::string& data, co
     return httpRequest(url, "POST", data, headers);
 }
 
-std::string HttpClient::parseUrl(const std::string& url, std::string& host, std::string& path, int& port, bool& isHttps) {
+void HttpClient::parseUrl(const std::string& url, std::string& host, std::string& path, int& port, bool& isHttps) {
     isHttps = false;
     port = 80;
     if (url.substr(0, 8) == "https://") {
@@ -111,8 +111,6 @@ std::string HttpClient::parseUrl(const std::string& url, std::string& host, std:
         port = std::stoi(host.substr(colonPos + 1));
         host = host.substr(0, colonPos);
     }
-
-    return host;
 }
 
 int HttpClient::createSocket(const std::string& host, int port) {

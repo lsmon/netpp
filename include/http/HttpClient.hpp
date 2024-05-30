@@ -3,6 +3,8 @@
 
 #include <string>
 #include <map>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
 
 class HttpClient {
 public:
@@ -14,7 +16,7 @@ public:
 
 private:
     std::string httpRequest(const std::string& url, const std::string& method, const std::string& data, const std::map<std::string, std::string>& headers);
-    std::string parseUrl(const std::string& url, std::string& host, std::string& path, int& port, bool& isHttps);
+    void parseUrl(const std::string& url, std::string& host, std::string& path, int& port, bool& isHttps);
     int createSocket(const std::string& host, int port);
     int createSSLSocket(const std::string& host, int port, SSL_CTX*& ctx, SSL*& ssl);
 };
