@@ -3,10 +3,13 @@
 
 #include <string>
 
+enum HTTP_METHOD_CODE {
+  GET,POST,PUT,DELETE,HEAD,OPTIONS,CONNECT,PATCH,TRACE
+};
+
 class HttpMethod
 {
 public:
-
   /// @brief GET: Retrieves a resource from the server. It's the most common method and is used to fetch data from the server. Example: GET /users
   inline static std::string GET = "GET";
   /// @brief POST: Creates a new resource on the server. It's often used to send data to the server to create a new resource. Example: POST /users
@@ -25,6 +28,9 @@ public:
   inline static std::string PATCH = "PATCH";
   /// @brief TRACE: Performs a message loop-back test along the path to the target resource. It's used to test the HTTP request and response cycle. Example: TRACE /users
   inline static std::string TRACE = "TRACE";
+
+  static HTTP_METHOD_CODE getMethodCode(const std::string& method);
+  
 };
 
 #endif

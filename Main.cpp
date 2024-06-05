@@ -19,7 +19,7 @@ void testHttpClient()
     {
         HttpClient client;
         std::string url = "http://localhost:8080/greetings";
-        std::string response = client.get(url);
+        std::string response = client.Get(url);
         std::cout << "GET Response: " << response << std::endl;
     }
     catch (const std::exception &ex)
@@ -35,7 +35,7 @@ void testHttpsClient()
     {
         HttpClient client;
         std::string url = "https://xcapi.alcacruz.com/contest";
-        std::string response = client.get(url);
+        std::string response = client.Get(url);
         std::cout << "GET Response: " << response << std::endl;
     }
     catch (const std::exception &ex)

@@ -16,6 +16,7 @@ set(SOURCES_SERVER ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/HttpServer.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/HttpHandler.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/QueryString.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/HttpRequest.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/HttpMethod.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/util/UUID.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/util/String.cpp)
 

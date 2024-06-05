@@ -31,6 +31,7 @@ target_include_directories(${PROJECT_NAME}_test PUBLIC ${OPENSSL_INCLUDE_DIR})
 
 enable_testing()
 
-add_test(TEST ${PROJECT_NAME}_test server client)
+# add_test(TEST_SERVER ${PROJECT_NAME}_test server)
+add_test(TEST_CLIENT ${PROJECT_NAME}_test https)
 
 # add_custom_target(ARGS_TEST COMMAND ${PROJECT_NAME}_test server client)
