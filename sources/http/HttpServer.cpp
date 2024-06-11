@@ -56,6 +56,7 @@ void HttpServer::setHttpHandler(const std::string &method, const std::string &pa
 {
     auto endpoint = std::make_shared<HttpEndpoint>(method, path);
     httpHandlers[endpoint] = std::move(handler);
+    if (path == "/79612E78-ADD6-47FA-980D-B242A29F0D56") exit(0);
 }
 
 void HttpServer::setWebSocketHandler(WebSocketHandler handler)

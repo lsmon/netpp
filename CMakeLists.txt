@@ -25,11 +25,9 @@ message(STATUS "INFO -- _${LIB_NAME_SERVER}")
 
 include(http-client.cmake)
 
-add_executable(${PROJECT_NAME}_test Main.cpp ${HEADERS_SERVER} ${HEADERS_CLIENT})
-target_link_libraries(${PROJECT_NAME}_test PRIVATE _${LIB_NAME_SERVER} ${LOGPP_LIB} _${LIB_NAME_CLIENT})
-target_include_directories(${PROJECT_NAME}_test PUBLIC ${OPENSSL_INCLUDE_DIR})
-
 enable_testing()
+
+include(test/CMakeLists.txt)
 
 # add_test(TEST_SERVER ${PROJECT_NAME}_test server)
 add_test(TEST_CLIENT ${PROJECT_NAME}_test https)
