@@ -20,7 +20,7 @@ HttpClient::~HttpClient()
     EVP_cleanup();
 }
 
-std::string HttpClient::httpRequest(const std::string &url, const std::string &method, const std::string &data, const std::map<std::string, std::string> &headers)
+HttpResponse HttpClient::httpRequest(const std::string &url, const std::string &method, const std::string &data, const std::map<std::string, std::string> &headers)
 {
     std::string host, path;
     int port;
@@ -53,34 +53,61 @@ std::string HttpClient::httpRequest(const std::string &url, const std::string &m
     {
         request << header.first << ": " << header.second << "\r\n";
     }
+    std::string contentType = "";
+    if (headers.find("Content-Type") != headers.end())
+    {
+        contentType = headers.at("Content-Type");
+    }
+    else if (headers.find("content-type") != headers.end())
+    {
+        contentType = headers.at("content-type");
+    }
 
     switch (HttpMethod::getMethodCode(method))
     {
     case GET:
-        /* code */
+        request << HttpMethod::GET << " " << path << " HTTP/1.1";
+
         break;
     case POST:
-        request << "Content-Length: " << data.length() << "\r\n";
+        request << HttpMethod::POST << " " << path << " HTTP/1.1";
+        request << "Content-Length: " << data.length();
+
+        request << "Content-Type: ";
+        if (contentType.empty())
+        {
+            contentType = "application/x-www-form-urlencoded";
+        }
+        request << contentType;
+
         break;
     case PUT:
+        request << HttpMethod::PUT << " " << path << " HTTP/1.1";
         break;
     case DELETE:
+        request << HttpMethod::DELETE << " " << path << " HTTP/1.1";
         break;
     case HEAD:
+        request << HttpMethod::HEAD << " " << path << " HTTP/1.1";
         break;
     case OPTIONS:
+        request << HttpMethod::OPTIONS << " " << path << " HTTP/1.1";
         break;
     case CONNECT:
+        request << HttpMethod::CONNECT << " " << path << " HTTP/1.1";
         break;
     case PATCH:
+        request << HttpMethod::PATCH << " " << path << " HTTP/1.1";
         break;
     case TRACE:
+        request << HttpMethod::TRACE << " " << path << " HTTP/1.1";
         break;
     default:
-        // TODO: Handle exception.
+        throw std::runtime_error("Invalid HTTP method");
         break;
     }
-    request << "Connection: close\r\n\r\n";
+
+    request << "\r\nConnection: close\r\n\r\n";
     if (!data.empty())
     {
         request << data;
@@ -113,15 +140,16 @@ std::string HttpClient::httpRequest(const std::string &url, const std::string &m
         SSL_CTX_free(ctx);
     }
 
-    return response.str();
+    
+    return HttpResponse::parse(response.str());
 }
 
-std::string HttpClient::Get(const std::string &url, const std::map<std::string, std::string> &headers)
+HttpResponse HttpClient::get(const std::string &url, const std::map<std::string, std::string> &headers)
 {
     return httpRequest(url, "GET", "", headers);
 }
 
-std::string HttpClient::Post(const std::string &url, const std::string &data, const std::map<std::string, std::string> &headers)
+HttpResponse HttpClient::post(const std::string &url, const std::string &data, const std::map<std::string, std::string> &headers)
 {
     return httpRequest(url, "POST", data, headers);
 }

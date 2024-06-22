@@ -6,6 +6,7 @@
 #include "HttpMethod.hpp"
 #include "Structures.hpp"
 #include "HttpRequest.hpp"
+#include "http/HttpClient.hpp"
 
 /**
      * @brief Defines the type for HTTP request handler functions.
