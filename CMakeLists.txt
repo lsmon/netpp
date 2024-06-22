@@ -14,6 +14,11 @@ message(STATUS "INFO -- CONFIGURE START")
 include(${CMAKE_CURRENT_SOURCE_DIR}/external/CMakeLists.txt)
 message(STATUS "INFO -- CONFIGURE FINISHED")
 
+message(STATUS "INFO -- JSON_LIB:   ${JSON_LIB}")
+message(STATUS "INFO -- JSON_INC:   ${JSON_INC}")
+message(STATUS "INFO -- LOGPP_LIB:  ${LOGPP_LIB}")
+message(STATUS "INFO -- LOGPP_INC:  ${LOGPP_INC}")
+
 find_package(OpenSSL REQUIRED)
 
 message(STATUS "OPENSSL_INCLUDE_DIR:    ${OPENSSL_INCLUDE_DIR}")
