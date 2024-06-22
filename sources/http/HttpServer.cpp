@@ -6,6 +6,7 @@
 #include <utility>
 #include "http/Status.hpp"
 #include "http/HttpRequest.hpp"
+#include "http/HttpResponse.hpp"
 #include "util/String.hpp"
 
 HttpServer::HttpServer(std::string host, std::string port, size_t maxConnections, size_t numThreads)
@@ -36,8 +37,6 @@ void HttpServer::run()
     {
         throw std::runtime_error("Failed to listen on socket");
     }
-
-    std::cout << "Server listening on " << host << ":" << port << std::endl;
 
     std::vector<std::thread> workers;
     for (size_t i = 0; i < numThreads; ++i)
@@ -216,8 +215,8 @@ void HttpServer::handleHttpRequest(const HttpRequest &request, HttpResponse &res
     }
     else
     {
-        response.status = 404;
-        response.body = "Not Found";
+        response.setStatus(404);
+        response.setBody("Not Found");
     }
 }
 
@@ -393,13 +392,13 @@ void HttpServer::releaseConnection()
 std::string HttpServer::generateHttpResponse(const HttpResponse &response)
 {
     std::ostringstream httpResponse;
-    httpResponse << "HTTP/1.1 " << response.status << " " << getStatusMessage(response.status) << "\r\n";
-    for (const auto &header : response.headers)
+    httpResponse << "HTTP/1.1 " << response.getStatus() << " " << getStatusMessage(response.getStatus()) << "\r\n";
+    for (const auto &header : response.getHeaders())
     {
         httpResponse << header.first << ": " << header.second << "\r\n";
     }
     httpResponse << "\r\n"
-                 << response.body;
+                 << response.getBody();
     return httpResponse.str();
 }
 
