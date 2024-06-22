@@ -3,8 +3,17 @@
 
 #include <string>
 
-enum HTTP_METHOD_CODE {
-  GET,POST,PUT,DELETE,HEAD,OPTIONS,CONNECT,PATCH,TRACE
+enum HTTP_METHOD
+{
+  GET,
+  POST,
+  PUT,
+  DELETE,
+  HEAD,
+  OPTIONS,
+  CONNECT,
+  PATCH,
+  TRACE
 };
 
 class HttpMethod
@@ -29,8 +38,9 @@ public:
   /// @brief TRACE: Performs a message loop-back test along the path to the target resource. It's used to test the HTTP request and response cycle. Example: TRACE /users
   inline static std::string TRACE = "TRACE";
 
-  static HTTP_METHOD_CODE getMethodCode(const std::string& method);
-  
+  static HTTP_METHOD getMethodCode(const std::string &method);
+
+  static std::string getValue(const HTTP_METHOD &method);
 };
 
 #endif
