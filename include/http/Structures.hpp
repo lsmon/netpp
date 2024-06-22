@@ -4,12 +4,12 @@
 #include <string>
 #include <unordered_map>
 
-struct HttpResponse
-{
-    int status;
-    std::unordered_map<std::string, std::string> headers;
-    std::string body;
-};
+// struct HttpResponse
+// {
+//     int status;
+//     std::unordered_map<std::string, std::string> headers;
+//     std::string body;
+// };
 
 struct WebSocketFrame
 {
