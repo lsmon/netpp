@@ -25,6 +25,10 @@ public:
      * @return - boolean value `true` if the string format is hexadecimal, `false` otherwise.
      */
     static bool isValidHex(const std::string &str);
+
+    static std::string trim(const std::string& str);
+
+    static std::string getline(std::string str);
 };
 
 #endif
