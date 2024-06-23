@@ -15,7 +15,7 @@ void testHttpClient()
     }
     catch (const std::exception &ex)
     {
-        LOG_ERROR << "Error: " << ex.what() << std::endl;
+        LOG_ERROR << "Error: " << ex.what();
     }
 }
 

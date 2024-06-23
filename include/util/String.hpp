@@ -5,6 +5,7 @@
 #include <regex>
 #include <vector>
 
+#define UNICODE_REGEX R"((\n[0-9a-fA-F]{1,4}))"
 class String
 {
 public:
@@ -29,6 +30,11 @@ public:
     static std::string trim(const std::string& str);
 
     static std::string getline(std::string str);
+
+    static std::string replaceUnicodeEscapeSequences(const std::string &input);
+            
+    static bool isUnicodeEscapeSequence(const std::string &input);
+
 };
 
 #endif

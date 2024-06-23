@@ -1,14 +1,17 @@
 #include "http/HttpServer.hpp"
 #include "http/HttpMethod.hpp"
 #include "http/HttpClient.hpp"
+#include "http/HttpResponse.hpp"
+#include "JSON.hpp"
 #include <string.h>
+#include "Log.hpp"
 
 void testHttpServer()
 {
     HttpServer serverHttp("localhost", "8080", 1024, 4);
 
     serverHttp.setHttpHandler(HttpMethod::GET, "/greetings", [](const HttpRequest &, HttpResponse &response)
-                              { response.body = "Hello, World!"; });
+                              { response.setBody("Hello, World!"); });
 
     serverHttp.run();
 }
@@ -19,53 +22,38 @@ void testHttpClient()
     {
         HttpClient client;
         std::string url = "http://localhost:8080/greetings";
-        std::string response = client.Get(url);
-        std::cout << "GET Response: " << response << std::endl;
+        HttpResponse response = client.get(url);
+        LOG_DEBUG << "GET Response: " << response.getBody();
     }
     catch (const std::exception &ex)
     {
-        std::cerr << "Error: " << ex.what() << std::endl;
+        LOG_ERROR << "Error: " << ex.what();
     }
 }
 
 
 void testHttpsClient()
 {
+    HttpResponse response;
     try
     {
         HttpClient client;
         std::string url = "https://xcapi.alcacruz.com/contest";
-        std::string response = client.Get(url);
-        std::cout << "GET Response: " << response << std::endl;
+        response = client.get(url);
+        // std::cout << "GET Response: " << response << std::endl;
+        auto jsonObj = Util::parse(response.getBody());
+        LOG_DEBUG << jsonObj->str();
+        // LOG_DEBUG << response.getBody();
     }
     catch (const std::exception &ex)
     {
-        std::cerr << "Error: " << ex.what() << std::endl;
+        LOG_DEBUG << response.getBody();
+        LOG_ERROR << "Error: " << ex.what();
     }
 }
 
 int main(int argc, char **args)
 {
-    if (argc != 2)
-    {
-        testHttpServer();
-        return EXIT_FAILURE;
-    }
-    if (strcmp(args[1], "server") == 0)
-    {
-        testHttpServer();
-    }
-    else if (strcmp(args[1], "client") == 0)
-    {
-        testHttpClient();
-    } 
-    else if (strcmp(args[1], "https") == 0)
-    {
-        testHttpsClient();
-    }
-    else 
-    {
-        std::cout << args[1] << std::endl;
-    }
+    testHttpsClient();
     return EXIT_SUCCESS;
 }

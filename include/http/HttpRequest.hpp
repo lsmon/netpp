@@ -15,8 +15,8 @@ private:
 
 public:
     void setHeaders(const std::unordered_map<std::string, std::string> value);
-    
-    void addHeader(const std::string& key, const std::string& value);
+
+    void addHeader(const std::string &key, const std::string &value);
 
     std::unordered_map<std::string, std::string> getHeaders() const;
 
@@ -24,7 +24,7 @@ public:
 
     std::string getMethod() const;
 
-    void setPath(const std::string& value);
+    void setPath(const std::string &value);
 
     std::string getPath() const;
 
@@ -32,11 +32,11 @@ public:
 
     std::unordered_map<std::string, std::string> getQueryString() const;
 
-    void setFragment(const std::string& value);
+    void setFragment(const std::string &value);
 
     std::string getFragment() const;
 
-    void setBody(const std::string& body);
+    void setBody(const std::string &body);
 
     std::string getBody() const;
 };

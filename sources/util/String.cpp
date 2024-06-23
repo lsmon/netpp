@@ -27,8 +27,13 @@ std::string String::trim(const std::string &str)
     {
         trimmedStr = str.substr(start, end - start + 1);
     }
+    if (trimmedStr.at(0) == '\n')
+    {
+        trimmedStr.erase(0, 1);
+    }
     return trimmedStr;
 }
+
 std::string String::getline(std::string str)
 {
     std::string line;
@@ -44,4 +49,26 @@ std::string String::getline(std::string str)
         str = "";   // Clear the original string
     }
     return line;
+}
+
+std::string String::replaceUnicodeEscapeSequences(const std::string &input)
+{
+    std::regex unicodeEscapeSequence(UNICODE_REGEX);
+    std::string output;
+
+    for (std::sregex_iterator it(input.begin(), input.end(), unicodeEscapeSequence), end; it != end; ++it)
+    {
+        std::string match = it->str();
+        int codepoint = std::stoi(match.substr(1), 0, 8);
+        char ascii = static_cast<char>(codepoint);
+        output += ascii;
+    }
+
+    return output;
+}
+
+bool String::isUnicodeEscapeSequence(const std::string &input)
+{
+    std::regex unicodeEscapeSequenceRegex(UNICODE_REGEX);
+    return std::regex_match(input, unicodeEscapeSequenceRegex);
 }
