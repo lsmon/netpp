@@ -2,9 +2,7 @@
 #include "http/HttpMethod.hpp"
 #include "http/HttpClient.hpp"
 #include "http/HttpResponse.hpp"
-#include "JSON.hpp"
 #include <string.h>
-#include "Log.hpp"
 
 void testHttpServer()
 {
@@ -23,11 +21,11 @@ void testHttpClient()
         HttpClient client;
         std::string url = "http://localhost:8080/greetings";
         HttpResponse response = client.get(url);
-        LOG_DEBUG << "GET Response: " << response.getBody();
+        std::cout << "GET Response: " << response.getBody() << std::endl;
     }
     catch (const std::exception &ex)
     {
-        LOG_ERROR << "Error: " << ex.what();
+        std::cerr << "Error: " << ex.what();
     }
 }
 
@@ -40,15 +38,13 @@ void testHttpsClient()
         HttpClient client;
         std::string url = "https://xcapi.alcacruz.com/contest";
         response = client.get(url);
-        // std::cout << "GET Response: " << response << std::endl;
-        auto jsonObj = Util::parse(response.getBody());
-        LOG_DEBUG << jsonObj->str();
-        // LOG_DEBUG << response.getBody();
+        
+        std::cout << response.getBody() << std::endl;
     }
     catch (const std::exception &ex)
     {
-        LOG_DEBUG << response.getBody();
-        LOG_ERROR << "Error: " << ex.what();
+        std::cout << response.getBody() << std::endl;
+        std::cerr << "Error: " << ex.what() << std::endl;
     }
 }
 
