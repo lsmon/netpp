@@ -1,7 +1,7 @@
 
 set(LIB_NAME_SERVER "${PROJECT_NAME}-http-server-${PROJECT_VERSION}")
 
-set(HEADERS_SERVER 
+set(INC_SRV 
             ${CMAKE_CURRENT_SOURCE_DIR}/include/http/HttpContentType.hpp
             ${CMAKE_CURRENT_SOURCE_DIR}/include/http/HttpServer.hpp
             ${CMAKE_CURRENT_SOURCE_DIR}/include/http/HttpMethod.hpp
@@ -10,10 +10,15 @@ set(HEADERS_SERVER
             ${CMAKE_CURRENT_SOURCE_DIR}/include/http/HttpRequest.hpp
             ${CMAKE_CURRENT_SOURCE_DIR}/include/http/HttpResponse.hpp
             ${CMAKE_CURRENT_SOURCE_DIR}/include/http/Status.hpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/http/QueryString.hpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/http/QueryString.hpp)
+
+set(INC_UTIL 
             ${CMAKE_CURRENT_SOURCE_DIR}/include/util/UUID.hpp
             ${CMAKE_CURRENT_SOURCE_DIR}/include/util/String.hpp)
 
+set(HEADERS_SERVER 
+            ${INC_SRV}
+            ${INC_UTIL})
 
 set(SOURCES_SERVER 
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/HttpContentType.cpp

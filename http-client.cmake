@@ -1,10 +1,11 @@
 
 set(LIB_NAME_CLIENT "${PROJECT_NAME}-http-client-${PROJECT_VERSION}")
 
-set(HEADERS_CLIENT include/http/HttpClient.hpp)
+set(INC_CLT include/http/HttpClient.hpp)
+set(HEADERS_CLIENT ${INC_CLT})
 set(SOURCES_CLIENT sources/http/HttpClient.cpp)
 
-add_library(_${LIB_NAME_CLIENT} ${SOURCES_CLIENT})
+add_library(_${LIB_NAME_CLIENT} ${SOURCES_CLIENT} ${HEADERS_CLIENT})
 
 target_include_directories(_${LIB_NAME_CLIENT}
     PUBLIC

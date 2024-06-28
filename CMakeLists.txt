@@ -11,13 +11,8 @@ set(PROJECT_VERSION_TWEAK 0)
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}.${PROJECT_VERSION_TWEAK}")
 
 message(STATUS "INFO -- CONFIGURE START")
-# include(${CMAKE_CURRENT_SOURCE_DIR}/external/CMakeLists.txt)
-message(STATUS "INFO -- CONFIGURE FINISHED")
 
-# message(STATUS "INFO -- JSON_LIB:   ${JSON_LIB}")
-# message(STATUS "INFO -- JSON_INC:   ${JSON_INC}")
-# message(STATUS "INFO -- LOGPP_LIB:  ${LOGPP_LIB}")
-# message(STATUS "INFO -- LOGPP_INC:  ${LOGPP_INC}")
+message(STATUS "INFO -- CONFIGURE FINISHED")
 
 find_package(OpenSSL REQUIRED)
 set(OPENSSL_INCLUDE_DIR /opt/homebrew/Cellar/openssl@3/3.3.1/include)
@@ -36,7 +31,18 @@ enable_testing()
 
 include(test/CMakeLists.txt)
 
+set(LIB_PROJECT "${PROJECT_NAME}-${PROJECT_VERSION}")
+add_library(_${LIB_PROJECT} ${HEADERS_SERVER} ${SOURCES_SERVER} ${SOURCES_CLIENT} ${HEADERS_CLIENT})
+target_include_directories(_${LIB_PROJECT}
+    PUBLIC
+        ${OPENSSL_INCLUDE_DIR}
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+)
+
+target_link_libraries(_${LIB_PROJECT} ${OPENSSL_LIBRARIES})
+
 # add_test(TEST_SERVER ${PROJECT_NAME}_test server)
 add_test(TEST_CLIENT ${PROJECT_NAME}_test https)
 
-# add_custom_target(ARGS_TEST COMMAND ${PROJECT_NAME}_test server client)
+include(cpack/CMakeLists.txt)

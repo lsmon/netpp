@@ -49,6 +49,11 @@
 /include/Util.hpp
 /include/JSON.hpp
 /include/util/
+/json
+/json/*
+/logpp
+/logpp/*
+/lib
 /lib/lib_logpp-*
 /sources/.vscode/
 include/json/JSONArray.hpp
