@@ -28,7 +28,7 @@ HttpResponse HttpResponse::parse(const std::string &msg)
             response.setStatusMsg(protocol_status[2]);
             flags[0] = false;
         }
-        else if (i > 0 && line != "\r\n" && flags[1])
+        else if (line != "\r\n" && flags[1])
         {
             // Parse headers
             // while (line != "\r\n")

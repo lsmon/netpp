@@ -42,6 +42,7 @@ private:
     std::string port;
     size_t maxConnections;
     size_t numThreads;
+    bool working;
 
     // std::map<HttpEndpoint*, HttpHandler> httpHandlers;
     std::map<std::shared_ptr<HttpEndpoint>, HttpHandler, HttpEndpointComparator> httpHandlers;
@@ -161,6 +162,8 @@ public:
      * @param handler The handler function.
      */
     void setWebSocketHandler(WebSocketHandler handler);
+
+    void stop();
 };
 
 #endif

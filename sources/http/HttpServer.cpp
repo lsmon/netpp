@@ -11,7 +11,7 @@
 
 HttpServer::HttpServer(std::string host, std::string port, size_t maxConnections, size_t numThreads)
     : host(std::move(host)), port(std::move(port)), maxConnections(maxConnections),
-      numThreads(numThreads) {}
+      numThreads(numThreads), working(true) {}
 
 void HttpServer::run()
 {
@@ -65,7 +65,7 @@ void HttpServer::setWebSocketHandler(WebSocketHandler handler)
 
 void HttpServer::runWorker(int serverFd)
 {
-    while (true)
+    while (working)
     {
         int clientFd = accept(serverFd, nullptr, nullptr);
         if (clientFd < 0)
@@ -405,4 +405,8 @@ std::string HttpServer::generateHttpResponse(const HttpResponse &response)
 std::string HttpServer::getStatusMessage(int statusCode)
 {
     return Status(statusCode).ss.str();
+}
+
+void HttpServer::stop() {
+    working = false;
 }

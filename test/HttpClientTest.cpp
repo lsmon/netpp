@@ -18,7 +18,7 @@ void testHttpClient()
     }
 }
 
-int main(int argc, char **args)
+int main()
 {
 
     testHttpClient();

@@ -18,7 +18,7 @@ void testHttpServer()
     serverHttp.run();
 }
 
-int main(int argc, char **args)
+int main()
 {
     testHttpServer();
     
