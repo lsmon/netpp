@@ -48,7 +48,7 @@ void testHttpsClient()
     }
 }
 
-int main(int argc, char **args)
+int main()
 {
     testHttpsClient();
     return EXIT_SUCCESS;

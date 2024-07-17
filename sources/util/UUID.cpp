@@ -41,13 +41,14 @@ std::string UUID::octet(int length)
 
 std::string UUID::toHexadecimal(unsigned char *buffer, size_t length)
 {
-    unsigned char ucharArray[] = {0x12, 0x34, 0x56, 0x78};
-    size_t ucharArraySize = sizeof(ucharArray) / sizeof(ucharArray[0]);
+    if (length < sizeof(unsigned char) * 4) {
+        throw std::invalid_argument("Buffer too small");
+    }
 
     std::stringstream ss;
-    for (size_t i = 0; i < ucharArraySize; i++)
+    for (size_t i = 0; i < 4; i++)
     {
-        ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(ucharArray[i]);
+        ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(buffer[i]);
     }
 
     return ss.str();
