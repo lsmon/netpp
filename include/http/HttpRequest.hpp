@@ -6,6 +6,7 @@
 class HttpRequest
 {
 private:
+    std::string version;
     std::unordered_map<std::string, std::string> headers;
     std::string method;
     std::string path;
@@ -14,6 +15,10 @@ private:
     std::string body;
 
 public:
+    void setVersion(const std::string& version);
+
+    std::string getVersion() const;
+
     void setHeaders(const std::unordered_map<std::string, std::string> value);
 
     void addHeader(const std::string &key, const std::string &value);

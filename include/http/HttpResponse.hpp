@@ -7,6 +7,7 @@
 class HttpResponse
 {
 private:
+    std::string version;
     int status;
     std::string statusMsg;
     std::unordered_map<std::string, std::string> headers;
@@ -17,6 +18,10 @@ public:
     HttpResponse() = default;
     
     static HttpResponse parse(const std::string &msg);
+
+    void setVersion(const std::string &value);
+
+    std::string getVersion() const;
 
     void setStatus(const int &status);
     
