@@ -68,9 +68,15 @@ def build_logpp():
     print(os_name)
     # run_command("cmake -S " + logpp_path + " -B " + logpp_build)
     # run_command("cmake --build " + logpp_build + " -j 14")
-
-    run_command("cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -S" + logpp_path + " -B" + logpp_build)
-    run_command("cmake --build " + logpp_build + " --config Debug --target all -j 12 --")
+    cmake_bin = "";
+    if os_name == "Darwin": 
+        cmake_bin = "/opt/homebrew/bin/cmake"
+    else :
+        cmake_bin = "cmake"
+    print(cmake_bin + " --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -S" + logpp_path + " -B" + logpp_build)
+    print(cmake_bin + " --build " + logpp_build + " --config Debug --target all -j 12 --")
+    run_command(cmake_bin + " --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -S" + logpp_path + " -B" + logpp_build)
+    run_command(cmake_bin + " --build " + logpp_build + " --config Debug --target all -j 12 --")
 
     print("Building completed.")
 
@@ -89,7 +95,7 @@ def install_logpp():
     os_postfix = ""
     if os_type == "linux":
         os_postfix = "Linux"
-    elif os_type == "darwin":
+    elif os_type == "Darwin":
         os_postfix = "Darwin"
     logpp_libzip = os.path.join(logpp_build, f"lib_logpp-{version}-{os_postfix}.zip")
     logpp_libinc = os.path.join(logpp_build, f"lib_logpp-{version}-{os_postfix}/include")

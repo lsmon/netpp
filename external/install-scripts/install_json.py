@@ -66,8 +66,16 @@ def build_json():
 
     os_name = platform.system()
     print(os_name)
-    run_command("cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -S" + json_path + " -B" + json_build)
-    run_command("cmake --build " + json_build + " --config Debug --target all -j 12 --")
+    print("cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -S" + json_path + " -B" + json_build)
+    print("cmake --build " + json_build + " --config Debug --target all -j 12 --")
+    cmake_bin = "";
+    if os_name == "Darwin": 
+        cmake_bin = "/opt/homebrew/bin/cmake"
+    else :
+        cmake_bin = "cmake"
+    
+    run_command((cmake_bin + " --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -S" + json_path + " -B" + json_build))
+    run_command(cmake_bin + " --build " + json_build + " --config Debug --target all -j 12 --")
     print("Building completed.")
 
 
