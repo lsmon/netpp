@@ -2,7 +2,6 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-
 #include <utility>
 #include "http/Status.hpp"
 #include "http/HttpRequest.hpp"
@@ -15,8 +14,8 @@ HttpServer::HttpServer(std::string host, std::string port, size_t maxConnections
 
 void HttpServer::run()
 {
-    int serverFd = socket(AF_INET, SOCK_STREAM, 0);
-    if (serverFd < 0)
+    Socket serverFd(socket(AF_INET, SOCK_STREAM, 0));
+    if (serverFd.get() < 0)
     {
         throw std::runtime_error("Failed to create socket");
     }
@@ -28,12 +27,12 @@ void HttpServer::run()
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(std::stoi(port));
 
-    if (bind(serverFd, reinterpret_cast<struct sockaddr *>(&address), sizeof(address)) < 0)
+    if (bind(serverFd.get(), reinterpret_cast<struct sockaddr *>(&address), sizeof(address)) < 0)
     {
         throw std::runtime_error("Failed to bind socket");
     }
 
-    if (listen(serverFd, static_cast<int>(maxConnections)) < 0)
+    if (listen(serverFd.get(), static_cast<int>(maxConnections)) < 0)
     {
         throw std::runtime_error("Failed to listen on socket");
     }
@@ -41,8 +40,9 @@ void HttpServer::run()
     std::vector<std::thread> workers;
     for (size_t i = 0; i < numThreads; ++i)
     {
-        workers.emplace_back([this, serverFd]()
-                             { runWorker(serverFd); });
+        int socketFd = serverFd.get();
+        workers.emplace_back([this, socketFd]()
+                             { runWorker(socketFd); });
     }
 
     for (auto &worker : workers)
@@ -55,7 +55,7 @@ void HttpServer::setHttpHandler(const std::string &method, const std::string &pa
 {
     auto endpoint = std::make_shared<HttpEndpoint>(method, path);
     httpHandlers[endpoint] = std::move(handler);
-    if (path == "/79612E78-ADD6-47FA-980D-B242A29F0D56") exit(0);
+    // if (path == "/79612E78-ADD6-47FA-980D-B242A29F0D56") exit(0);
 }
 
 void HttpServer::setWebSocketHandler(WebSocketHandler handler)
@@ -112,19 +112,20 @@ std::optional<HttpRequest> HttpServer::readHttpRequest(int clientFd)
 {
     const int MAX_REQUEST_SIZE = 8192; // Maximum size of the request buffer
     char requestBuffer[MAX_REQUEST_SIZE];
-    int bytesRead = 0;
+
+    int totalBytesRead = 0;
 
     // Read the request line and headers
-    while (true)
+    while (totalBytesRead < MAX_REQUEST_SIZE)
     {
-        int n = read(clientFd, requestBuffer + bytesRead, MAX_REQUEST_SIZE - bytesRead);
-        if (n <= 0)
+        int bytesRead = read(clientFd, requestBuffer + bytesRead, MAX_REQUEST_SIZE - bytesRead);
+        if (bytesRead <= 0)
         {
             // Error or connection closed
             return std::nullopt;
         }
 
-        bytesRead += n;
+        totalBytesRead += bytesRead;
 
         // Check if we've reached   the end of headers
         char *endOfHeaders = strstr(requestBuffer, "\r\n\r\n");
@@ -206,6 +207,7 @@ std::optional<HttpRequest> HttpServer::readHttpRequest(int clientFd)
 
 void HttpServer::handleHttpRequest(const HttpRequest &request, HttpResponse &response)
 {
+    std::lock_guard<std::mutex> lock(handlersMutex);
     auto endpoint = std::make_shared<HttpEndpoint>(request.getMethod(), request.getPath());
     auto it = httpHandlers.find(endpoint);
     
@@ -238,19 +240,154 @@ void HttpServer::handleWebSocketConnection(int clientFd)
     WebSocketFrame frame;
     while (readWebSocketFrame(clientFd, frame))
     {
-        WebSocketFrame response;
-        webSocketHandler.value_or(
-            [](const WebSocketFrame &, WebSocketFrame &response)
-            {
-                response.fin = true;
-                response.opcode = 0x1; // Text frame
-                response.payload = "No WebSocket handler set";
-            })(frame, response);
-        sendWebSocketFrame(clientFd, response);
+        switch (frame.opcode) {
+            case WebSocketOpcode::TextFrame:
+                handleTextFrame(clientFd, frame);
+                break;
+            case WebSocketOpcode::BinaryFrame:
+                handleBinaryFrame(clientFd, frame);
+                break;
+            case WebSocketOpcode::CloseFrame:
+                handleCloseFrame(clientFd);
+                return; // Close the connection after handling close frame
+            case WebSocketOpcode::PingFrame:
+                handlePingFrame(clientFd);
+                break;
+            case WebSocketOpcode::PongFrame:
+                handlePongFrame(clientFd);
+                break;
+            default:
+                handleUnknownFrame(clientFd, frame);
+                break;
+        }
+
+        // WebSocketFrame response;
+        // webSocketHandler.value_or(
+        //     [](const WebSocketFrame &, WebSocketFrame &response)
+        //     {
+        //         response.fin = true;
+        //         response.opcode = WebSocketOpcode::TextFrame; // Text frame
+        //         response.payload = "No WebSocket handler set";
+        //     })(frame, response);
+        // sendWebSocketFrame(clientFd, response);
     }
 }
 
-bool HttpServer::readWebSocketFrame(int clientFd, WebSocketFrame &frame)
+void HttpServer::handleBinaryFrame(int clientFd, const WebSocketFrame &frame)
+{
+    // Process the binary data (e.g., save to a file, forward it, etc.)
+    std::vector<uint8_t> binaryData(frame.payload.begin(), frame.payload.end());
+
+
+    std::cout << "Received Binary Frame of size: " << binaryData.size() << " bytes" << std::endl;
+
+    // Example: Just acknowledge receipt of binary data
+    std::string ackMessage = "Binary data received (" + std::to_string(binaryData.size()) + " bytes)";
+    sendWebSocketFrame(clientFd, WebSocketOpcode::TextFrame, ackMessage);
+}
+
+void HttpServer::handleTextFrame(int clientFd, const WebSocketFrame &frame)
+{
+    // Assuming that the payload is a string of UTF-8 text
+    std::string textData(frame.payload.begin(), frame.payload.end());
+
+    // Process the text data (e.g., echo it back, log it, etc.)
+    std::cout << "Received Text Frame: " << textData << std::endl;
+
+    // Example: Echo the text data back to the client
+    sendWebSocketFrame(clientFd, WebSocketOpcode::TextFrame, textData);
+}
+
+void HttpServer::handleCloseFrame(int clientFd)
+{
+    std::cout << "Received Close Frame. Closing connection..." << std::endl;
+
+    // Send a close frame back to acknowledge the closure
+    std::vector<uint8_t> closePayload = {0x03, 0xE8}; // Status code 1000 (normal closure)
+    sendWebSocketFrame(clientFd, WebSocketOpcode::CloseFrame, closePayload);
+
+    // Close the connection
+    close(clientFd);
+}
+
+void HttpServer::handlePingFrame(int clientFd)
+{
+    std::cout << "Received Ping Frame. Sending Pong..." << std::endl;
+
+    // Respond with a pong frame containing the same payload as the ping
+    sendWebSocketFrame(clientFd, WebSocketOpcode::PongFrame, std::string{});
+}
+
+void HttpServer::handlePongFrame(int clientFd)
+{
+    std::cout << "Received Pong Frame." << std::endl;
+
+    // Usually, no action is needed in response to a Pong
+}
+
+void HttpServer::handleUnknownFrame(int clientFd, const WebSocketFrame &frame)
+{
+    std::cerr << "Received Unknown or Unsupported Frame with Opcode: " << frame.opcode << std::endl;
+
+    // Optionally, you can send a close frame with a status code indicating protocol error
+    std::vector<uint8_t> closePayload = {0x03, 0xF2}; // Status code 1002 (protocol error)
+    sendWebSocketFrame(clientFd, WebSocketOpcode::CloseFrame, closePayload);
+
+    // Close the connection after sending the close frame
+    close(clientFd);
+}
+
+
+void HttpServer::sendWebSocketFrame(int clientFd, WebSocketOpcode opcode, const std::string &payload)
+{
+    std::vector<uint8_t> binaryPayload(payload.begin(), payload.end());
+    sendWebSocketFrame(clientFd, opcode, binaryPayload);
+}
+
+void HttpServer::sendWebSocketFrame(int clientFd, WebSocketOpcode opcode, const std::vector<uint8_t> &payload)
+{
+    WebSocketFrame frame;
+    frame.opcode = opcode;
+    std::string payloadToString(payload.begin(), payload.end());
+    frame.payload = payloadToString;
+
+    // Serialize the frame to the WebSocket frame format
+    std::vector<uint8_t> rawFrame = serializeWebSocketFrame(frame);
+
+    // Send the raw frame over the network
+    write(clientFd, rawFrame.data(), rawFrame.size());
+}
+
+std::vector<uint8_t> HttpServer::serializeWebSocketFrame(const WebSocketFrame &frame) 
+{
+    std::vector<uint8_t> rawFrame;
+
+    // Build the frame header
+    uint8_t firstByte = 0x80 | frame.opcode; // FIN bit set, opcode set
+    rawFrame.push_back(firstByte);
+
+    // Payload length
+    size_t payloadLength = frame.payload.size();
+    if (payloadLength <= 125) {
+        rawFrame.push_back(static_cast<uint8_t>(payloadLength));
+    } else if (payloadLength <= 65535) {
+        rawFrame.push_back(126);
+        rawFrame.push_back((payloadLength >> 8) & 0xFF);
+        rawFrame.push_back(payloadLength & 0xFF);
+    } else {
+        rawFrame.push_back(127);
+        for (int i = 7; i >= 0; --i) {
+            rawFrame.push_back((payloadLength >> (i * 8)) & 0xFF);
+        }
+    }
+
+    // Add the payload
+    rawFrame.insert(rawFrame.end(), frame.payload.begin(), frame.payload.end());
+
+    return rawFrame;
+}
+
+bool HttpServer::readWebSocketFrame(int clientFd, WebSocketFrame &frame) 
 {
     const int MAX_FRAME_SIZE = 8192; // Maximum size of a WebSocket frame
     unsigned char frameBuffer[MAX_FRAME_SIZE];
@@ -331,7 +468,7 @@ bool HttpServer::readWebSocketFrame(int clientFd, WebSocketFrame &frame)
     frame.payload.assign(reinterpret_cast<char *>(frameBuffer + 2 + lengthBytes), payloadLength);
     return true; // Successfully read WebSocket frame
 }
-
+/* 
 void HttpServer::sendWebSocketFrame(int clientFd, const WebSocketFrame &frame)
 {
     const int MAX_FRAME_SIZE = 8192; // Maximum size of a WebSocket frame
@@ -371,7 +508,8 @@ void HttpServer::sendWebSocketFrame(int clientFd, const WebSocketFrame &frame)
         std::cerr << "Failed to send WebSocket frame" << std::endl;
     }
 }
-
+ */
+ 
 bool HttpServer::tryAcquireConnection()
 {
     std::lock_guard<std::mutex> lock(connectionsMutex);
@@ -409,4 +547,17 @@ std::string HttpServer::getStatusMessage(int statusCode)
 
 void HttpServer::stop() {
     working = false;
+}
+
+Socket::~Socket()
+{
+    if (fd >= 0) 
+    {
+        close(fd);
+    }
+}
+
+int Socket::get() const
+{
+    return fd;
 }

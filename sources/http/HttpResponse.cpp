@@ -59,6 +59,16 @@ HttpResponse HttpResponse::parse(const std::string &msg)
     return response;
 }
 
+void HttpResponse::setVersion(const std::string &value)
+{
+    version = value;
+}
+
+std::string HttpResponse::getVersion() const
+{
+    return version;
+}
+
 void HttpResponse::setStatus(const int &status)
 {
     this->status = status;

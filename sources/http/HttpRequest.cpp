@@ -1,5 +1,15 @@
 #include "http/HttpRequest.hpp"
 
+void HttpRequest::setVersion(const std::string &value)
+{
+    version = value;
+}
+
+std::string HttpRequest::getVersion() const
+{
+    return version;
+}
+
 void HttpRequest::setHeaders(const std::unordered_map<std::string, std::string> value)
 {
     headers = value;

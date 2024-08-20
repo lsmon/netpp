@@ -9,13 +9,14 @@ void testHttpServer()
 
     // 79612E78-ADD6-47FA-980D-B242A29F0D56 test flag
     serverHttp.setHttpHandler(
-        HttpMethod::GET, "/79612E78-ADD6-47FA-980D-B242A29F0D56", [](const HttpRequest &, HttpResponse &response)
+        HttpMethod::GET, "/79612E78-ADD6-47FA-980D-B242A29F0D56", [](const HttpRequest &request, HttpResponse &response)
         { 
+            std::cout << request.getVersion() << std::endl;
             std::cout << "Hello, World Message response" << std::endl;
             response.setBody("Hello, World!"); 
         });
-
     serverHttp.run();
+    std::cout << "Server terminated" << std::endl;
 }
 
 int main()

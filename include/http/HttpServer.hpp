@@ -16,6 +16,22 @@
 #include <map>
 #include "http/HttpRequest.hpp"
 
+enum WebSocketOpcode {
+    ContinuationFrame = 0x0,
+    TextFrame = 0x1,
+    BinaryFrame = 0x2,
+    CloseFrame = 0x8,
+    PingFrame = 0x9,
+    PongFrame = 0xA
+};
+
+// Define named constants for magic numbers
+const int MAX_REQUEST_SIZE = 8192;
+const int MAX_FRAME_SIZE = 8192;
+const int MAX_7BIT_PAYLOAD_LENGTH = 125;
+const int EXTENDED_PAYLOAD_16BIT = 126;
+const int EXTENDED_PAYLOAD_64BIT = 127;
+
 struct HttpEndpointComparator
 {
     bool operator()(const std::shared_ptr<HttpEndpoint> lhs, const std::shared_ptr<HttpEndpoint> rhs) const
@@ -28,9 +44,23 @@ struct HttpEndpointComparator
     }
 };
 
+// Implementing Resource Acquisition Is Initialization to manage the socket resource.
+class Socket {
+private:
+    int fd;
+
+public:
+    Socket(int fd) : fd(fd) {}
+
+    ~Socket();
+
+    int get() const;
+};
+
 class HttpServer
 {
 private:
+    std::mutex handlersMutex;
     /**
      * @brief Defines the type for WebSocket message handler functions.
      * @param frame The WebSocket frame received.
@@ -90,6 +120,77 @@ private:
     void handleWebSocketConnection(int clientFd);
 
     /**
+     * @brief This function will handle binary frames, which contain arbitrary binary data.
+     * 
+     * @param clientFd 
+     * @param frame 
+     */
+    void handleBinaryFrame(int clientFd, const WebSocketFrame& frame);
+
+    /**
+     * @brief This function will handle text frames, which typically contain UTF-8 encoded text data.
+     * 
+     * @param clientFd 
+     * @param frame 
+     */
+    void handleTextFrame(int clientFd, const WebSocketFrame& frame);
+
+    /**
+     * @brief This function will handle the close frame, which indicates that the client or server wants to close the WebSocket connection.
+     * 
+     * @param clientFd 
+     */
+    void handleCloseFrame(int clientFd);
+
+    /**
+     * @brief This function will handle ping frames, which are used to check the connection's liveness. Typically, a pong frame is sent in response.
+     * 
+     * @param clientFd 
+     */
+    void handlePingFrame(int clientFd);
+
+    /**
+     * @brief This function will handle pong frames, which are sent in response to ping frames. The server might not need to do much here beyond acknowledging receipt.
+     * 
+     * @param clientFd 
+     */
+    void handlePongFrame(int clientFd);
+
+    /**
+     * @brief This function will handle any frames with opcodes that are not recognized. It’s a good idea to have a catch-all handler.
+     * 
+     * @param clientFd 
+     * @param frame 
+     */
+    void handleUnknownFrame(int clientFd, const WebSocketFrame& frame);
+    
+    /**
+     * @brief Converting strings to raw bytes before sending.
+     * 
+     * @param clientFd 
+     * @param opcode 
+     * @param payload 
+     */
+    void sendWebSocketFrame(int clientFd, WebSocketOpcode opcode, const std::string& payload);
+
+    /**
+     * @brief This helper function will send a WebSocket frame back to the client.
+     * 
+     * @param clientFd 
+     * @param opcode 
+     * @param payload 
+     */
+    void sendWebSocketFrame(int clientFd, WebSocketOpcode opcode, const std::vector<uint8_t>& payload);
+    
+    /**
+     * @brief This helper function will serialize the WebSocketFrame structure into the raw bytes that can be sent over the network.
+     * 
+     * @param frame 
+     * @return std::vector<uint8_t> 
+     */
+    static std::vector<uint8_t> serializeWebSocketFrame(const WebSocketFrame& frame);
+
+    /**
      * @brief Reads a WebSocket frame from a regular socket connection.
      * @param clientFd The client socket file descriptor.
      * @param frame Reference to store the read WebSocket frame.
@@ -102,7 +203,7 @@ private:
      * @param clientFd The client socket file descriptor.
      * @param frame The WebSocket frame to send.
      */
-    static void sendWebSocketFrame(int clientFd, const WebSocketFrame &frame);
+    // static void sendWebSocketFrame(int clientFd, const WebSocketFrame &frame);
 
     /**
      * @brief Attempts to acquire a connection slot.
@@ -128,6 +229,51 @@ private:
      * @return The corresponding status message.
      */
     static std::string getStatusMessage(int statusCode);
+
+    /**
+     * @brief To validate a WebSocket frame, you should check the following:
+     * 1. Opcode: The opcode should be one of the following:
+     *   -. 0x0: Continuation frame
+     *   -. 0x1: Text frame
+     *   -. 0x2: Binary frame
+     *   -. 0x8: Close frame
+     *   -. 0x9: Ping frame
+     *   -. 0xA: Pong frame
+     * 2. Payload length: The payload length should be valid based on the opcode.
+     * 3. Masking: The masking bit should be set for client-to-server frames.
+     * 4. Frame size: The frame size should not exceed the maximum allowed size.
+     * 
+     * @param frame 
+     * @return true 
+     * @return false 
+     */
+    bool validateWebSocketFrame(const WebSocketFrame& frame);
+
+    /**
+     * @brief HTTP Request/Response Validation:
+     * To validate an HTTP request or response, you should check the following:
+     * 1. Method: The method should be one of the following:
+     *   -. GET
+     *   -. POST
+     *   -. PUT
+     *   -. DELETE
+     *   -. HEAD
+     *   -. OPTIONS
+     *   -. CONNECT
+     *   -. PATCH
+     * 2. URI: The URI should be valid and properly formatted.
+     * 3. HTTP version: The HTTP version should be one of the following:
+     *   -. HTTP/1.0
+     *   -. HTTP/1.1
+     *   -. HTTP/2
+     * 4. Headers: The headers should be valid and properly formatted.
+     * 5. Body: The body should be valid and properly formatted based on the content type.
+     * 
+     * @param request 
+     * @return true 
+     * @return false 
+     */
+    bool validateHttpRequest(const HttpRequest& request);
 
 public:
     /**
