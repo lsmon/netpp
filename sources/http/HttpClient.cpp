@@ -80,42 +80,21 @@ HttpResponse HttpClient::httpRequest(const std::string &url, const std::string &
         throw std::runtime_error("Invalid HTTP method");
         break;
     }
-    request << "\r\nHost: " << host << "\r\n";
+    request << "\r\nHost: " << host;
 
     for (const auto &header : headers)
     {
-        request << header.first << ": " << header.second << "\r\n";
+        request << "\r\n" << header.first << ": " << header.second;
     }
-/*
-    std::string contentType = "";
-    if (headers.find("Content-Type") != headers.end())
-    {
-        contentType = headers.at("Content-Type");
-    }
-    else if (headers.find("content-type") != headers.end())
-    {
-        contentType = headers.at("content-type");
-    }
-    request << "\r\nContent-Type: ";
-    if (!contentType.empty())
-    {
-        request << contentType;
-    }
-    else
-    {
-        request << "text/plain";
-    }
-*/
 
     if (!data.empty())
     {
         request << "\r\nContent-Length: " << data.size();
     }
-
-    request << "\r\nConnection: close\r\n\r\n";
+    request  << "\r\n\r\n";
     if (!data.empty())
     {
-        request << data << "\r\n\r\n";
+        request  << data;
     }
     std::string requestStr = request.str();
     std::cout << "___________________________" << std::endl;
