@@ -23,9 +23,11 @@ HttpResponse HttpResponse::parse(const std::string &msg)
         {
             std::regex rx(" ");
             std::vector<std::string> protocol_status = String::tokenize(line, rx);
-            response.setProtocol(protocol_status[0]);
-            response.setStatus(std::stoi(protocol_status[1]));
-            response.setStatusMsg(protocol_status[2]);
+            if (protocol_status.size() > 2) {
+                response.setProtocol(protocol_status[0]);
+                response.setStatus(std::stoi(protocol_status[1]));
+                response.setStatusMsg(protocol_status[2]);
+            }
             flags[0] = false;
         }
         else if (line != "\r\n" && flags[1])

@@ -46,40 +46,14 @@ HttpResponse HttpClient::httpRequest(const std::string &url, const std::string &
     }
 
     std::stringstream request;
-    request << method << " " << path << " HTTP/1.1\r\n";
-    request << "Host: " << host << "\r\n";
-
-    for (const auto &header : headers)
-    {
-        request << header.first << ": " << header.second << "\r\n";
-    }
-    std::string contentType = "";
-    if (headers.find("Content-Type") != headers.end())
-    {
-        contentType = headers.at("Content-Type");
-    }
-    else if (headers.find("content-type") != headers.end())
-    {
-        contentType = headers.at("content-type");
-    }
 
     switch (HttpMethod::getMethodCode(method))
     {
     case GET:
         request << HttpMethod::GET << " " << path << " HTTP/1.1";
-
         break;
     case POST:
         request << HttpMethod::POST << " " << path << " HTTP/1.1";
-        request << "Content-Length: " << data.length();
-
-        request << "Content-Type: ";
-        if (contentType.empty())
-        {
-            contentType = "application/x-www-form-urlencoded";
-        }
-        request << contentType;
-
         break;
     case PUT:
         request << HttpMethod::PUT << " " << path << " HTTP/1.1";
@@ -106,15 +80,50 @@ HttpResponse HttpClient::httpRequest(const std::string &url, const std::string &
         throw std::runtime_error("Invalid HTTP method");
         break;
     }
+    request << "\r\nHost: " << host << "\r\n";
+
+    for (const auto &header : headers)
+    {
+        request << header.first << ": " << header.second << "\r\n";
+    }
+/*
+    std::string contentType = "";
+    if (headers.find("Content-Type") != headers.end())
+    {
+        contentType = headers.at("Content-Type");
+    }
+    else if (headers.find("content-type") != headers.end())
+    {
+        contentType = headers.at("content-type");
+    }
+    request << "\r\nContent-Type: ";
+    if (!contentType.empty())
+    {
+        request << contentType;
+    }
+    else
+    {
+        request << "text/plain";
+    }
+*/
+
+    if (!data.empty())
+    {
+        request << "\r\nContent-Length: " << data.size();
+    }
 
     request << "\r\nConnection: close\r\n\r\n";
     if (!data.empty())
     {
-        request << data;
+        request << data << "\r\n\r\n";
     }
-
     std::string requestStr = request.str();
+    std::cout << "___________________________" << std::endl;
+    std::cout << requestStr << std::endl;
+    request.clear();
+    request.flush();
 
+    std::cout << "___________________________" << std::endl;
     if (isHttps)
     {
         SSL_write(ssl, requestStr.c_str(), requestStr.length());
@@ -139,9 +148,13 @@ HttpResponse HttpClient::httpRequest(const std::string &url, const std::string &
         SSL_free(ssl);
         SSL_CTX_free(ctx);
     }
-
-    
-    return HttpResponse::parse(response.str());
+    std::string responseStr = response.str();
+    std::cout << "___________________________" << std::endl;
+    std::cout << responseStr << std::endl;
+    std::cout << "___________________________" << std::endl;
+    response.clear();
+    response.flush();
+    return HttpResponse::parse(responseStr);
 }
 
 HttpResponse HttpClient::get(const std::string &url, const std::map<std::string, std::string> &headers)
