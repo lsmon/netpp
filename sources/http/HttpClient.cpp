@@ -90,19 +90,17 @@ HttpResponse HttpClient::httpRequest(const std::string &url, const std::string &
     if (!data.empty())
     {
         request << "\r\nContent-Length: " << data.size();
-    }
-    request  << "\r\n\r\n";
-    if (!data.empty())
-    {
+        request  << "\r\n\r\n";
         request  << data;
     }
+    else
+    {
+        request  << "\r\n\r\n";
+    }
     std::string requestStr = request.str();
-    std::cout << "___________________________" << std::endl;
-    std::cout << requestStr << std::endl;
     request.clear();
     request.flush();
 
-    std::cout << "___________________________" << std::endl;
     if (isHttps)
     {
         SSL_write(ssl, requestStr.c_str(), requestStr.length());
@@ -128,9 +126,6 @@ HttpResponse HttpClient::httpRequest(const std::string &url, const std::string &
         SSL_CTX_free(ctx);
     }
     std::string responseStr = response.str();
-    std::cout << "___________________________" << std::endl;
-    std::cout << responseStr << std::endl;
-    std::cout << "___________________________" << std::endl;
     response.clear();
     response.flush();
     return HttpResponse::parse(responseStr);
