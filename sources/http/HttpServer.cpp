@@ -240,7 +240,7 @@ void HttpServer::handleWebSocketConnection(int clientFd)
     WebSocketFrame frame;
     while (readWebSocketFrame(clientFd, frame))
     {
-        switch (frame.opcode) {
+        switch (frame.getOpcode()) {
             case WebSocketOpcode::TextFrame:
                 handleTextFrame(clientFd, frame);
                 break;
@@ -260,23 +260,13 @@ void HttpServer::handleWebSocketConnection(int clientFd)
                 handleUnknownFrame(clientFd, frame);
                 break;
         }
-
-        // WebSocketFrame response;
-        // webSocketHandler.value_or(
-        //     [](const WebSocketFrame &, WebSocketFrame &response)
-        //     {
-        //         response.fin = true;
-        //         response.opcode = WebSocketOpcode::TextFrame; // Text frame
-        //         response.payload = "No WebSocket handler set";
-        //     })(frame, response);
-        // sendWebSocketFrame(clientFd, response);
     }
 }
 
 void HttpServer::handleBinaryFrame(int clientFd, const WebSocketFrame &frame)
 {
     // Process the binary data (e.g., save to a file, forward it, etc.)
-    std::vector<uint8_t> binaryData(frame.payload.begin(), frame.payload.end());
+    std::vector<uint8_t> binaryData(frame.getPayload().begin(), frame.getPayload().end());
 
 
     std::cout << "Received Binary Frame of size: " << binaryData.size() << " bytes" << std::endl;
@@ -289,7 +279,7 @@ void HttpServer::handleBinaryFrame(int clientFd, const WebSocketFrame &frame)
 void HttpServer::handleTextFrame(int clientFd, const WebSocketFrame &frame)
 {
     // Assuming that the payload is a string of UTF-8 text
-    std::string textData(frame.payload.begin(), frame.payload.end());
+    std::string textData(frame.getPayload().begin(), frame.getPayload().end());
 
     // Process the text data (e.g., echo it back, log it, etc.)
     std::cout << "Received Text Frame: " << textData << std::endl;
@@ -327,7 +317,7 @@ void HttpServer::handlePongFrame(int clientFd)
 
 void HttpServer::handleUnknownFrame(int clientFd, const WebSocketFrame &frame)
 {
-    std::cerr << "Received Unknown or Unsupported Frame with Opcode: " << frame.opcode << std::endl;
+    std::cerr << "Received Unknown or Unsupported Frame with Opcode: " << frame.getOpcode() << std::endl;
 
     // Optionally, you can send a close frame with a status code indicating protocol error
     std::vector<uint8_t> closePayload = {0x03, 0xF2}; // Status code 1002 (protocol error)
@@ -347,9 +337,9 @@ void HttpServer::sendWebSocketFrame(int clientFd, WebSocketOpcode opcode, const 
 void HttpServer::sendWebSocketFrame(int clientFd, WebSocketOpcode opcode, const std::vector<uint8_t> &payload)
 {
     WebSocketFrame frame;
-    frame.opcode = opcode;
+    frame.setOpcode(opcode);
     std::string payloadToString(payload.begin(), payload.end());
-    frame.payload = payloadToString;
+    frame.setPayload(payloadToString);
 
     // Serialize the frame to the WebSocket frame format
     std::vector<uint8_t> rawFrame = serializeWebSocketFrame(frame);
@@ -363,11 +353,11 @@ std::vector<uint8_t> HttpServer::serializeWebSocketFrame(const WebSocketFrame &f
     std::vector<uint8_t> rawFrame;
 
     // Build the frame header
-    uint8_t firstByte = 0x80 | frame.opcode; // FIN bit set, opcode set
+    uint8_t firstByte = 0x80 | frame.getOpcode(); // FIN bit set, opcode set
     rawFrame.push_back(firstByte);
 
     // Payload length
-    size_t payloadLength = frame.payload.size();
+    size_t payloadLength = frame.getPayload().size();
     if (payloadLength <= 125) {
         rawFrame.push_back(static_cast<uint8_t>(payloadLength));
     } else if (payloadLength <= 65535) {
@@ -382,7 +372,7 @@ std::vector<uint8_t> HttpServer::serializeWebSocketFrame(const WebSocketFrame &f
     }
 
     // Add the payload
-    rawFrame.insert(rawFrame.end(), frame.payload.begin(), frame.payload.end());
+    rawFrame.insert(rawFrame.end(), frame.getPayload().begin(), frame.getPayload().end());
 
     return rawFrame;
 }
@@ -401,8 +391,8 @@ bool HttpServer::readWebSocketFrame(int clientFd, WebSocketFrame &frame)
     }
 
     // Parse WebSocket frame opcode and payload length
-    frame.fin = (frameBuffer[0] & 0x80) != 0;
-    frame.opcode = frameBuffer[0] & 0x0F;
+    frame.setFin((frameBuffer[0] & 0x80) != 0);
+    frame.setOpcode(frameBuffer[0] & 0x0F);
     bool masked = (frameBuffer[1] & 0x80) != 0;
     unsigned long long payloadLength = frameBuffer[1] & 0x7F;
     int lengthBytes = 0;
@@ -465,7 +455,10 @@ bool HttpServer::readWebSocketFrame(int clientFd, WebSocketFrame &frame)
     }
 
     // Populate WebSocketFrame object
-    frame.payload.assign(reinterpret_cast<char *>(frameBuffer + 2 + lengthBytes), payloadLength);
+    std::string framePayload;
+    framePayload.assign(reinterpret_cast<char *>(frameBuffer + 2 + lengthBytes), payloadLength);
+    frame.setPayload(framePayload);
+    // frame.payload.assign(reinterpret_cast<char *>(frameBuffer + 2 + lengthBytes), payloadLength);
     return true; // Successfully read WebSocket frame
 }
 /* 

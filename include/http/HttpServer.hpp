@@ -1,9 +1,6 @@
-#ifndef NETPP_SERVER_HPP
-#define NETPP_SERVER_HPP
+#ifndef __SERVER_HPP__
+#define __SERVER_HPP__
 
-#include "http/Structures.hpp"
-#include "http/HttpHandler.hpp"
-#include "http/HttpMethod.hpp"
 #include <mutex>
 #include <functional>
 #include <thread>
@@ -14,7 +11,11 @@
 #include <iostream>
 #include <memory>
 #include <map>
-#include "http/HttpRequest.hpp"
+#include "HttpRequest.hpp"
+// #include "Structures.hpp"
+#include "HttpHandler.hpp"
+#include "HttpMethod.hpp"
+#include "WebSocketFrame.hpp"
 
 enum WebSocketOpcode {
     ContinuationFrame = 0x0,

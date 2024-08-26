@@ -1,10 +1,13 @@
-#ifndef HTTPCLIENT_HPP
-#define HTTPCLIENT_HPP
+#ifndef __HTTP_CLIENT_HPP__
+#define __HTTP_CLIENT_HPP__
 
 #include <string>
 #include <map>
+#include "config.h"
+#if OPENSSL_ENABLED
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+#endif
 #include "http/HttpMethod.hpp"
 #include "http/HttpResponse.hpp"
 

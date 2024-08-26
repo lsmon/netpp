@@ -1,5 +1,5 @@
-#ifndef HTTP_METHOD_HPP
-#define HTTP_METHOD_HPP
+#ifndef __HTTP_METHOD_HPP__
+#define __HTTP_METHOD_HPP__
 
 #include <string>
 

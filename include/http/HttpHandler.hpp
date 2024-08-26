@@ -1,12 +1,12 @@
-#ifndef HTTP_HANDLER_HPP
-#define HTTP_HANDLER_HPP
+#ifndef __HANDLER_HPP__
+#define __HANDLER_HPP__
 
 #include <functional>
 #include <utility>
 #include "HttpMethod.hpp"
 #include "Structures.hpp"
 #include "HttpRequest.hpp"
-#include "http/HttpClient.hpp"
+#include "HttpClient.hpp"
 
 /**
      * @brief Defines the type for HTTP request handler functions.

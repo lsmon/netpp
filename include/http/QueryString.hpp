@@ -1,5 +1,5 @@
-#ifndef NETPP_QUERY_STRING
-#define NETPP_QUERY_STRING
+#ifndef __QUERY_STRING__
+#define __QUERY_STRING__
 
 #include <string>
 #include <unordered_map>

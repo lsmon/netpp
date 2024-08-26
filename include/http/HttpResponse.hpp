@@ -1,5 +1,5 @@
-#ifndef NETPP_HTTP_RESPONSE_HPP
-#define NETPP_HTTP_RESPONSE_HPP
+#ifndef __HTTP_RESPONSE_HPP__
+#define __HTTP_RESPONSE_HPP__
 
 #include <string>
 #include <unordered_map>

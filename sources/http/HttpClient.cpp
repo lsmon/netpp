@@ -5,8 +5,6 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <unistd.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
 
 HttpClient::HttpClient()
 {
@@ -28,6 +26,7 @@ HttpResponse HttpClient::httpRequest(const std::string &url, const std::string &
     parseUrl(url, host, path, port, isHttps);
 
     int sock;
+#if OPENSSL_ENABLED
     SSL_CTX *ctx = nullptr;
     SSL *ssl = nullptr;
 
@@ -39,6 +38,9 @@ HttpResponse HttpClient::httpRequest(const std::string &url, const std::string &
     {
         sock = createSocket(host, port);
     }
+#else
+    sock = createSocket(host, port);
+#endif    
 
     if (sock < 0)
     {

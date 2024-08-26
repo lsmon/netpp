@@ -10,13 +10,14 @@ set(INC_SRV
             ${CMAKE_CURRENT_SOURCE_DIR}/include/http/HttpRequest.hpp
             ${CMAKE_CURRENT_SOURCE_DIR}/include/http/HttpResponse.hpp
             ${CMAKE_CURRENT_SOURCE_DIR}/include/http/Status.hpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/http/QueryString.hpp)
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/http/QueryString.hpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/http/WebSocketFrame.hpp)
 
 set(INC_UTIL 
             ${CMAKE_CURRENT_SOURCE_DIR}/include/util/UUID.hpp
             ${CMAKE_CURRENT_SOURCE_DIR}/include/util/String.hpp)
 
-set(HEADERS_SERVER 
+set(HEADERS_SERVER ${CMAKE_CURRENT_SOURCE_DIR}/include/config.h
             ${INC_SRV}
             ${INC_UTIL})
 
@@ -28,6 +29,7 @@ set(SOURCES_SERVER
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/HttpRequest.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/HttpResponse.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/HttpMethod.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/WebSocketFrame.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/util/UUID.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/util/String.cpp)
 

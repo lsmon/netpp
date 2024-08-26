@@ -1,3 +1,6 @@
+#ifndef __HTTP_CONTENT_TYPE__
+#define __HTTP_CONTENT_TYPE__
+
 #include <string>
 
 enum CONTENT_TYPE {
@@ -51,3 +54,5 @@ public:
 
     static std::string getValue(const CONTENT_TYPE& type);
 };
+
+#endif

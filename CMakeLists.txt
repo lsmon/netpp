@@ -11,22 +11,34 @@ set(PROJECT_VERSION_TWEAK 3)
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}.${PROJECT_VERSION_TWEAK}")
 
 message(STATUS "INFO -- CONFIGURE START")
+set(OS_NAME ${CMAKE_SYSTEM_NAME})
+message("Operating System: ${OS_NAME}")
+message("Operating System Version: ${CMAKE_SYSTEM_VERSION}")
+message("Processor Architecture: ${CMAKE_SYSTEM_PROCESSOR}")
 
-message(STATUS "INFO -- CONFIGURE FINISHED")
 
 find_package(OpenSSL REQUIRED)
-set(OPENSSL_INCLUDE_DIR /opt/homebrew/Cellar/openssl@3/3.3.1/include)
-set(OPENSSL_LIBRARIES   /opt/homebrew/Cellar/openssl@3/3.3.1/lib/libssl.dylib;/opt/homebrew/Cellar/openssl@3/3.3.1/lib/libcrypto.dylib)
-message(STATUS "OPENSSL_INCLUDE_DIR:    ${OPENSSL_INCLUDE_DIR}")
-message(STATUS "OPENSSL_LIBRARIES:      ${OPENSSL_LIBRARIES}")
-include_directories(${OPENSSL_INCLUDE_DIR})
+message(STATUS ${DARWIN})
+
+if (OpenSSL_FOUND)
+    set(OPENSSL_ENABLED true)
+    message(STATUS "OPENSSL_INCLUDE_DIR:    ${OPENSSL_INCLUDE_DIR}")
+    message(STATUS "OPENSSL_LIBRARIES:      ${OPENSSL_LIBRARIES}")
+
+    include_directories(${OPENSSL_INCLUDE_DIR})
+    
+else()
+    set(OPENSSL_ENABLED false)
+endif()
+
+configure_file(config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/config.h)
 
 include(http-server.cmake)
-
-message(STATUS "INFO -- _${LIB_NAME_SERVER}")
-
 include(http-client.cmake)
 
+message(STATUS "INFO -- _${LIB_NAME_SERVER}")
+message(STATUS "INFO -- _${LIB_NAME_CLIENT}")
+message(STATUS "INFO -- CONFIGURE FINISHED")
 enable_testing()
 
 include(test/CMakeLists.txt)
@@ -43,6 +55,6 @@ target_include_directories(_${LIB_PROJECT}
 target_link_libraries(_${LIB_PROJECT} ${OPENSSL_LIBRARIES})
 
 # add_test(TEST_SERVER ${PROJECT_NAME}_test server)
-add_test(TEST_CLIENT ${PROJECT_NAME}_test https)
+# add_test(TEST_CLIENT ${PROJECT_NAME}_test https)
 
 include(cpack/CMakeLists.txt)

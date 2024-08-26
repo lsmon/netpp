@@ -1,7 +1,7 @@
 
 set(LIB_NAME_CLIENT "${PROJECT_NAME}-http-client-${PROJECT_VERSION}")
 
-set(INC_CLT include/http/HttpClient.hpp)
+set(INC_CLT include/http/HttpClient.hpp include/config.h)
 set(HEADERS_CLIENT ${INC_CLT})
 set(SOURCES_CLIENT sources/http/HttpClient.cpp)
 

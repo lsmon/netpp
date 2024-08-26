@@ -1,0 +1,8 @@
+#ifndef __CONFIG_H__
+#define __CONFIG_H__
+
+#define VERSION "@PROJECT_VERSION@"
+#define BUILD_TYPE "@CMAKE_BUILD_TYPE@"
+#define OPENSSL_ENABLED @OPENSSL_ENABLED@
+
+#endif

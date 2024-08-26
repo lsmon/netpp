@@ -1,5 +1,5 @@
-#ifndef HETPP_HTTP_REQUEST
-#define HETPP_HTTP_REQUEST
+#ifndef __HTTP_REQUEST__
+#define __HTTP_REQUEST__
 
 #include "QueryString.hpp"
 
