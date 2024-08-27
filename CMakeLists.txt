@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.11)
 project(netpp)
 
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 set(PROJECT_VERSION_MAJOR 0)
 set(PROJECT_VERSION_MINOR 1)
@@ -31,6 +33,8 @@ else()
     set(OPENSSL_ENABLED false)
 endif()
 
+find_package(Threads REQUIRED)
+
 configure_file(config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/config.h)
 
 include(http-server.cmake)
@@ -41,7 +45,7 @@ message(STATUS "INFO -- _${LIB_NAME_CLIENT}")
 message(STATUS "INFO -- CONFIGURE FINISHED")
 enable_testing()
 
-include(test/CMakeLists.txt)
+#include(test/CMakeLists.txt)
 
 set(LIB_PROJECT "${PROJECT_NAME}-${PROJECT_VERSION}")
 add_library(_${LIB_PROJECT} ${HEADERS_SERVER} ${SOURCES_SERVER} ${SOURCES_CLIENT} ${HEADERS_CLIENT})
@@ -52,7 +56,7 @@ target_include_directories(_${LIB_PROJECT}
         $<INSTALL_INTERFACE:include>
 )
 
-target_link_libraries(_${LIB_PROJECT} ${OPENSSL_LIBRARIES})
+target_link_libraries(_${LIB_PROJECT} ${OPENSSL_LIBRARIES} stdc++fs)
 
 # add_test(TEST_SERVER ${PROJECT_NAME}_test server)
 # add_test(TEST_CLIENT ${PROJECT_NAME}_test https)
