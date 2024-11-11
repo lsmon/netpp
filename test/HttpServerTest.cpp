@@ -29,7 +29,8 @@ void testHttpMethodsForServer() {
         { 
             std::cout << request.getVersion() << std::endl;
             std::cout << "Hello, World GET Message response" << std::endl;
-            response.setBody("Hello, World!"); 
+            response.setBody("Hello, World!");
+            response.setStatus(200);
         });
 
     serverHttp.setHttpHandler(
@@ -37,7 +38,8 @@ void testHttpMethodsForServer() {
         { 
             std::cout << request.getVersion() << std::endl;
             std::cout << "Hello, World " << HttpMethod::GET << " Message response" << std::endl;
-            response.setBody("Hello, World!"); 
+            response.setBody("Hello, World!");
+            response.setStatus(200);
         });
     
     serverHttp.setHttpHandler(
@@ -102,7 +104,7 @@ void testHttpMethodsForServer() {
 
 int main()
 {
-    testHttpServer();
+    testHttpMethodsForServer();
     
     return EXIT_SUCCESS;
 }
