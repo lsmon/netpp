@@ -1,5 +1,5 @@
-#include "http/HttpServer.hpp"
-#include "http/HttpMethod.hpp"
+#include "http/Server.hpp"
+#include "http/Method.hpp"
 #include <string.h>
 
 void testHttpServer()
@@ -47,7 +47,8 @@ void testHttpMethodsForServer() {
         { 
             std::cout << request.getVersion() << std::endl;
             std::cout << "Hello, World " << HttpMethod::PUT << " Message response" << std::endl;
-            response.setBody("Hello, World!"); 
+            response.setBody("Hello, World!");
+            response.setStatus(200);
         });
 
     serverHttp.setHttpHandler(
@@ -56,13 +57,16 @@ void testHttpMethodsForServer() {
             std::cout << request.getVersion() << std::endl;
             std::cout << "Hello, World " << HttpMethod::DELETE << " Message response" << std::endl;
             response.setBody("Hello, World!"); 
+            response.setStatus(200);
         });
 
     serverHttp.setHttpHandler(
         HttpMethod::HEAD, "/", [](const HttpRequest &request, HttpResponse &response)
         { 
             std::cout << request.getVersion() << std::endl;
+            response.addHeader("hello", "world");
             std::cout << "Hello, World " << HttpMethod::HEAD << " Message response" << std::endl;
+            response.setStatus(200);
         });
 
     serverHttp.setHttpHandler(
@@ -70,7 +74,8 @@ void testHttpMethodsForServer() {
         { 
             std::cout << request.getVersion() << std::endl;
             std::cout << "Hello, World " << HttpMethod::OPTIONS << " Message response" << std::endl;
-            response.setBody("Hello, World!"); 
+            response.setBody("Hello, World!");
+            response.setStatus(200);
         });
 
     serverHttp.setHttpHandler(
@@ -79,6 +84,7 @@ void testHttpMethodsForServer() {
             std::cout << request.getVersion() << std::endl;
             std::cout << "Hello, World " << HttpMethod::CONNECT << " Message response" << std::endl;
             response.setBody("Hello, World!"); 
+            response.setStatus(200);
         });
 
     serverHttp.setHttpHandler(
@@ -86,7 +92,8 @@ void testHttpMethodsForServer() {
         { 
             std::cout << request.getVersion() << std::endl;
             std::cout << "Hello, World " << HttpMethod::PATCH << " Message response" << std::endl;
-            response.setBody("Hello, World!"); 
+            response.setBody("Hello, World!");
+            response.setStatus(200);
         });
 
     serverHttp.setHttpHandler(
@@ -94,7 +101,8 @@ void testHttpMethodsForServer() {
         { 
             std::cout << request.getVersion() << std::endl;
             std::cout << "Hello, World " << HttpMethod::TRACE << " Message response" << std::endl;
-            response.setBody("Hello, World!"); 
+            response.setBody("Hello, World!");
+            response.setStatus(200); 
         });
     
     serverHttp.run();

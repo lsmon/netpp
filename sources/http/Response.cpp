@@ -1,4 +1,4 @@
-#include "http/HttpResponse.hpp"
+#include "http/Response.hpp"
 #include "util/String.hpp"
 #include <iostream>
 #include <istream>

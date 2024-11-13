@@ -45,10 +45,12 @@ message(STATUS "INFO -- _${LIB_NAME_CLIENT}")
 message(STATUS "INFO -- CONFIGURE FINISHED")
 enable_testing()
 
-#include(test/CMakeLists.txt)
+include(test/CMakeLists.txt)
 
 set(LIB_PROJECT "${PROJECT_NAME}-${PROJECT_VERSION}")
+
 add_library(_${LIB_PROJECT} ${HEADERS_SERVER} ${SOURCES_SERVER} ${SOURCES_CLIENT} ${HEADERS_CLIENT})
+
 target_include_directories(_${LIB_PROJECT}
     PUBLIC
         ${OPENSSL_INCLUDE_DIR}

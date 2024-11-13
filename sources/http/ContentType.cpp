@@ -1,4 +1,4 @@
-#include "http/HttpContentType.hpp"
+#include "http/ContentType.hpp"
 #include <algorithm>
 #include <cctype>
 

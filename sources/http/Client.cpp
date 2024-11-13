@@ -1,4 +1,4 @@
-#include "http/HttpClient.hpp"
+#include "http/Client.hpp"
 #include <iostream>
 #include <sstream>
 #include <cstring>

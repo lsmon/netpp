@@ -1,4 +1,4 @@
-#include "http/HttpRequest.hpp"
+#include "http/Request.hpp"
 
 void HttpRequest::setVersion(const std::string &value)
 {

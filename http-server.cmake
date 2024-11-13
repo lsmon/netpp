@@ -2,13 +2,13 @@
 set(LIB_NAME_SERVER "${PROJECT_NAME}-http-server-${PROJECT_VERSION}")
 
 set(INC_SRV 
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/http/HttpContentType.hpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/http/HttpServer.hpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/http/HttpMethod.hpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/http/HttpHandler.hpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/http/ContentType.hpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/http/Server.hpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/http/Method.hpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/http/Handler.hpp
             ${CMAKE_CURRENT_SOURCE_DIR}/include/http/Structures.hpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/http/HttpRequest.hpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/http/HttpResponse.hpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/http/Request.hpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/http/Response.hpp
             ${CMAKE_CURRENT_SOURCE_DIR}/include/http/Status.hpp
             ${CMAKE_CURRENT_SOURCE_DIR}/include/http/QueryString.hpp
             ${CMAKE_CURRENT_SOURCE_DIR}/include/http/WebSocketFrame.hpp)
@@ -22,13 +22,13 @@ set(HEADERS_SERVER ${CMAKE_CURRENT_SOURCE_DIR}/include/config.h
             ${INC_UTIL})
 
 set(SOURCES_SERVER 
-            ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/HttpContentType.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/HttpServer.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/HttpHandler.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/ContentType.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/Server.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/Handler.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/QueryString.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/HttpRequest.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/HttpResponse.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/HttpMethod.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/Request.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/Response.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/Method.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/WebSocketFrame.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/util/UUID.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/util/String.cpp)

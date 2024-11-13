@@ -1,4 +1,4 @@
-#include "http/HttpMethod.hpp"
+#include "http/Method.hpp"
 #include <algorithm>
 #include <cctype>
 

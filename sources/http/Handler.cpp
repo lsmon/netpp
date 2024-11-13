@@ -1,7 +1,7 @@
 //
 // Created by Salomon Lee on 4/26/24.
 //
-#include "http/HttpHandler.hpp"
+#include "http/Handler.hpp"
 
 HttpEndpoint::HttpEndpoint(std::string httpMethod, std::string path) : httpMethod(std::move(httpMethod)), path(std::move(path)) {}
 

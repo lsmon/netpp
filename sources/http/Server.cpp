@@ -1,11 +1,11 @@
-#include "http/HttpServer.hpp"
+#include "http/Server.hpp"
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <utility>
 #include "http/Status.hpp"
-#include "http/HttpRequest.hpp"
-#include "http/HttpResponse.hpp"
+#include "http/Request.hpp"
+#include "http/Response.hpp"
 #include "util/String.hpp"
 
 HttpServer::HttpServer(std::string host, std::string port, size_t maxConnections, size_t numThreads)

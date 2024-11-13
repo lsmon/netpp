@@ -8,8 +8,8 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #endif
-#include "http/HttpMethod.hpp"
-#include "http/HttpResponse.hpp"
+#include "http/Method.hpp"
+#include "http/Response.hpp"
 
 class HttpClient {
 public:

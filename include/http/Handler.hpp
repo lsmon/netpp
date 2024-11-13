@@ -3,10 +3,10 @@
 
 #include <functional>
 #include <utility>
-#include "HttpMethod.hpp"
-#include "Structures.hpp"
-#include "HttpRequest.hpp"
-#include "HttpClient.hpp"
+#include "http/Method.hpp"
+#include "http/Structures.hpp"
+#include "http/Request.hpp"
+#include "http/Client.hpp"
 
 /**
      * @brief Defines the type for HTTP request handler functions.

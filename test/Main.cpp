@@ -1,7 +1,7 @@
-#include "http/HttpServer.hpp"
-#include "http/HttpMethod.hpp"
-#include "http/HttpClient.hpp"
-#include "http/HttpResponse.hpp"
+#include "http/Server.hpp"
+#include "http/Method.hpp"
+#include "http/Client.hpp"
+#include "http/Response.hpp"
 #include <string.h>
 
 void testHttpServer()

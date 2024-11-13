@@ -1,5 +1,5 @@
-#include "http/HttpMethod.hpp"
-#include "http/HttpClient.hpp"
+#include "http/Method.hpp"
+#include "http/Client.hpp"
 #include <string.h>
 #include <iostream>
 

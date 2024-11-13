@@ -11,11 +11,11 @@
 #include <iostream>
 #include <memory>
 #include <map>
-#include "HttpRequest.hpp"
-// #include "Structures.hpp"
-#include "HttpHandler.hpp"
-#include "HttpMethod.hpp"
-#include "WebSocketFrame.hpp"
+#include "http/Request.hpp"
+// #include "http/Structures.hpp"
+#include "http/Handler.hpp"
+#include "http/Method.hpp"
+#include "http/WebSocketFrame.hpp"
 
 enum WebSocketOpcode {
     ContinuationFrame = 0x0,

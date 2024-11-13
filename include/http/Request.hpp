@@ -1,7 +1,7 @@
 #ifndef __HTTP_REQUEST__
 #define __HTTP_REQUEST__
 
-#include "QueryString.hpp"
+#include "http/QueryString.hpp"
 
 class HttpRequest
 {
