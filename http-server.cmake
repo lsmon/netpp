@@ -14,6 +14,7 @@ set(INC_SRV
             ${CMAKE_CURRENT_SOURCE_DIR}/include/http/WebSocketFrame.hpp)
 
 set(INC_UTIL 
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/Exception.hpp
             ${CMAKE_CURRENT_SOURCE_DIR}/include/util/UUID.hpp
             ${CMAKE_CURRENT_SOURCE_DIR}/include/util/String.hpp)
 
@@ -30,6 +31,7 @@ set(SOURCES_SERVER
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/Response.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/Method.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/WebSocketFrame.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/sources/Exception.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/util/UUID.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/sources/util/String.cpp)
 

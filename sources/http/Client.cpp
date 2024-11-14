@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <unistd.h>
+#include "Exception.hpp"
 
 HttpClient::HttpClient()
 {
@@ -44,7 +45,7 @@ HttpResponse HttpClient::httpRequest(const std::string &url, const std::string &
 
     if (sock < 0)
     {
-        throw std::runtime_error("Failed to create socket");
+        throw netpp::Exception("Failed to create socket", netpp::ERR_CODE::SOCKET_CREATION);
     }
 
     std::stringstream request;
@@ -159,7 +160,7 @@ void HttpClient::parseUrl(const std::string &url, std::string &host, std::string
     }
     else
     {
-        throw std::runtime_error("Invalid URL format");
+        throw netpp::Exception("Invalid URL format", netpp::ERR_CODE::URL_MALFORMED);
     }
 
     size_t slashPos = host.find('/');
@@ -191,21 +192,21 @@ int HttpClient::createSocket(const std::string &host, int port)
     std::string portStr = std::to_string(port);
     if (getaddrinfo(host.c_str(), portStr.c_str(), &hints, &res) != 0)
     {
-        throw std::runtime_error("Failed to resolve host");
+        throw netpp::Exception("Failed to resolve host", netpp::ERR_CODE::NO_HOST);
     }
 
     int sock = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     if (sock < 0)
     {
         freeaddrinfo(res);
-        throw std::runtime_error("Failed to create socket");
+        throw netpp::Exception("Failed to create socket", netpp::ERR_CODE::SOCKET_CREATION);
     }
 
     if (connect(sock, res->ai_addr, res->ai_addrlen) < 0)
     {
         close(sock);
         freeaddrinfo(res);
-        throw std::runtime_error("Failed to connect to host");
+        throw netpp::Exception("Failed to connect to host", netpp::ERR_CODE::SOCKET_CONNECTION);
     }
 
     freeaddrinfo(res);
@@ -217,14 +218,14 @@ int HttpClient::createSSLSocket(const std::string &host, int port, SSL_CTX *&ctx
     ctx = SSL_CTX_new(SSLv23_client_method());
     if (!ctx)
     {
-        throw std::runtime_error("Failed to create SSL context");
+        throw netpp::Exception("Failed to create SSL context", netpp::ERR_CODE::SSL_CTX_CREATE);
     }
 
     ssl = SSL_new(ctx);
     if (!ssl)
     {
         SSL_CTX_free(ctx);
-        throw std::runtime_error("Failed to create SSL object");
+        throw netpp::Exception("Failed to create SSL object", netpp::ERR_CODE::SSL_CTX_CREATE);
     }
 
     int sock = createSocket(host, port);
@@ -234,7 +235,7 @@ int HttpClient::createSSLSocket(const std::string &host, int port, SSL_CTX *&ctx
     {
         SSL_free(ssl);
         SSL_CTX_free(ctx);
-        throw std::runtime_error("Failed to connect via SSL");
+        throw netpp::Exception("Failed to connect via SSL", netpp::ERR_CODE::SSL_CTX_CONNECT);
     }
 
     return sock;

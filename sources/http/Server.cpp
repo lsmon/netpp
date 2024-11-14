@@ -7,6 +7,7 @@
 #include "http/Request.hpp"
 #include "http/Response.hpp"
 #include "util/String.hpp"
+#include "Exception.hpp"
 
 HttpServer::HttpServer(std::string host, std::string port, size_t maxConnections, size_t numThreads)
     : host(std::move(host)), port(std::move(port)), maxConnections(maxConnections),
@@ -17,24 +18,22 @@ void HttpServer::run()
     Socket serverFd(socket(AF_INET, SOCK_STREAM, 0));
     if (serverFd.get() < 0)
     {
-        throw std::runtime_error("Failed to create socket");
+        throw netpp::Exception("Failed to create socket", netpp::ERR_CODE::SOCKET_CREATION);
     }
 
-    struct sockaddr_in address
-    {
-    };
+    struct sockaddr_in address{};
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(std::stoi(port));
 
     if (bind(serverFd.get(), reinterpret_cast<struct sockaddr *>(&address), sizeof(address)) < 0)
     {
-        throw std::runtime_error("Failed to bind socket");
+        throw netpp::Exception("Failed to bind socket", netpp::ERR_CODE::SOCKET_BINDING);
     }
 
     if (listen(serverFd.get(), static_cast<int>(maxConnections)) < 0)
     {
-        throw std::runtime_error("Failed to listen on socket");
+        throw netpp::Exception("Failed to listen on socket", netpp::ERR_CODE::SOCKET_LISTENING);
     }
 
     std::vector<std::thread> workers;
@@ -461,47 +460,6 @@ bool HttpServer::readWebSocketFrame(int clientFd, WebSocketFrame &frame)
     // frame.payload.assign(reinterpret_cast<char *>(frameBuffer + 2 + lengthBytes), payloadLength);
     return true; // Successfully read WebSocket frame
 }
-/* 
-void HttpServer::sendWebSocketFrame(int clientFd, const WebSocketFrame &frame)
-{
-    const int MAX_FRAME_SIZE = 8192; // Maximum size of a WebSocket frame
-    unsigned char frameBuffer[MAX_FRAME_SIZE];
-    int frameSize = 0;
-
-    // Construct WebSocket frame header
-    frameBuffer[frameSize++] = 0x80 | frame.opcode; // FIN + opcode
-    unsigned long long payloadLength = frame.payload.length();
-    if (payloadLength <= 125)
-    {
-        frameBuffer[frameSize++] = payloadLength; // Payload length (7 bits)
-    }
-    else if (payloadLength <= 0xFFFF)
-    {
-        frameBuffer[frameSize++] = 126; // Extended payload length (16 bits)
-        frameBuffer[frameSize++] = (payloadLength >> 8) & 0xFF;
-        frameBuffer[frameSize++] = payloadLength & 0xFF;
-    }
-    else
-    {
-        frameBuffer[frameSize++] = 127; // Extended payload length (64 bits)
-        for (int i = 7; i >= 0; --i)
-        {
-            frameBuffer[frameSize++] = (payloadLength >> (8 * i)) & 0xFF;
-        }
-    }
-
-    // Copy payload data into frame buffer
-    memcpy(frameBuffer + frameSize, frame.payload.c_str(), payloadLength);
-    frameSize += payloadLength;
-
-    // Send WebSocket frame over SSL connection
-    size_t bytesSent = write(clientFd, frameBuffer, frameSize);
-    if (bytesSent != frameSize)
-    {
-        std::cerr << "Failed to send WebSocket frame" << std::endl;
-    }
-}
- */
  
 bool HttpServer::tryAcquireConnection()
 {
@@ -528,8 +486,7 @@ std::string HttpServer::generateHttpResponse(const HttpResponse &response)
     {
         httpResponse << header.first << ": " << header.second << "\r\n";
     }
-    httpResponse << "\r\n"
-                 << response.getBody();
+    httpResponse << "\r\n" << response.getBody();
     return httpResponse.str();
 }
 
