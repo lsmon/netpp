@@ -12,11 +12,13 @@ namespace netpp
         SOCKET_BINDING = 4001,
         SOCKET_LISTENING = 4002,
         SOCKET_CONNECTION = 4003,
-        URL_MALFORMED = 4004,
-        NO_HOST = 4005,
-        SSL_CTX_CREATE = 4006,
-        SSL_CTX_OBJECT = 4007,
-        SSL_CTX_CONNECT = 4008
+        SOCKET_ACCEPT = 4004,
+        SOCKET_SEND = 4005,
+        URL_MALFORMED = 4006,
+        NO_HOST = 4007,
+        SSL_CTX_CREATE = 4008,
+        SSL_CTX_OBJECT = 4009,
+        SSL_CTX_CONNECT = 4010
     };
 
     class ErrorCode 
@@ -26,6 +28,8 @@ namespace netpp
         inline static std::string SOCKET_BINDING = "SOCKET_BINDING";
         inline static std::string SOCKET_LISTENING = "SOCKET_LISTENING";
         inline static std::string SOCKET_CONNECTION = "SOCKET_LISTENING";
+        inline static std::string SOCKET_ACCEPT = "SOCKET_ACCEPT";
+        inline static std::string SOCKET_SEND = "SOCKET_SEND";
         inline static std::string URL_MALFORMED = "URL_MALFORMED";
         inline static std::string NO_HOST = "NO_HOST";
         inline static std::string SSL_CTX_CREATE = "SSL_CTX_CREATE";
