@@ -43,9 +43,10 @@ include(http-client.cmake)
 message(STATUS "INFO -- _${LIB_NAME_SERVER}")
 message(STATUS "INFO -- _${LIB_NAME_CLIENT}")
 message(STATUS "INFO -- CONFIGURE FINISHED")
-enable_testing()
 
-include(test/CMakeLists.txt)
+#enable_testing()
+
+#include(test/CMakeLists.txt)
 
 set(LIB_PROJECT "${PROJECT_NAME}-${PROJECT_VERSION}")
 

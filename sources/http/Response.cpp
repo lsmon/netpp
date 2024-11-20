@@ -44,7 +44,7 @@ HttpResponse HttpResponse::parse(const std::string &msg)
                     response.addHeader(key, value);
                 }
             }
-            if (lines[i + 1] == "\n")
+            if (lines[i] == "\n")
                 flags[1] = false;
         }
         else if (line != "\n" && flags[2])
@@ -54,7 +54,7 @@ HttpResponse HttpResponse::parse(const std::string &msg)
             {
                 response.setBody(response.getBody() + String::trim(line));
             }
-            if (lines[i + 1] == "\n")
+            if (lines[i] == "\n")
                 flags[2] = false;
         }
     }

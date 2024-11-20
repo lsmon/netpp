@@ -1,5 +1,5 @@
 #include "Exception.hpp"
-
+#include <algorithm>
 
 std::string netpp::Exception::getMessage() const
 {
