@@ -1,14 +1,18 @@
 
 set(LIB_NAME_CLIENT "${PROJECT_NAME}-http-client-${PROJECT_VERSION}")
 
-set(INC_CLT include/http/Client.hpp 
-            include/Exception.hpp
-            include/config.h)
+set(INC_CLT
+        include/http/Client.hpp
+        include/util/URL.hpp
+        include/Exception.hpp
+        include/config.h)
 
 set(HEADERS_CLIENT ${INC_CLT})
 
-set(SOURCES_CLIENT sources/http/Client.cpp
-            sources/Exception.cpp)
+set(SOURCES_CLIENT
+        sources/http/Client.cpp
+        sources/util/URL.cpp
+        sources/Exception.cpp)
 
 add_library(_${LIB_NAME_CLIENT} ${SOURCES_CLIENT} ${HEADERS_CLIENT})
 

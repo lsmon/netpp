@@ -64,4 +64,4 @@ target_link_libraries(_${LIB_PROJECT} ${OPENSSL_LIBRARIES} stdc++fs)
 # add_test(TEST_SERVER ${PROJECT_NAME}_test server)
 # add_test(TEST_CLIENT ${PROJECT_NAME}_test https)
 
-include(cpack/CMakeLists.txt)
+#include(cpack/CMakeLists.txt)
