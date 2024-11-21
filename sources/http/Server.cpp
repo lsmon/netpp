@@ -15,8 +15,8 @@ HttpServer::HttpServer(std::string host, std::string port, size_t maxConnections
 
 void HttpServer::run()
 {
-    Socket serverFd(socket(AF_INET, SOCK_STREAM, 0));
-    if (serverFd.get() < 0)
+    auto serverFd = std::make_shared<Socket>(socket(AF_INET, SOCK_STREAM, 0));
+    if (serverFd->get() < 0)
     {
         throw netpp::Exception("Failed to create socket", netpp::ERR_CODE::SOCKET_CREATION);
     }
@@ -26,12 +26,12 @@ void HttpServer::run()
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(std::stoi(port));
 
-    if (bind(serverFd.get(), reinterpret_cast<struct sockaddr *>(&address), sizeof(address)) < 0)
+    if (bind(serverFd->get(), reinterpret_cast<struct sockaddr *>(&address), sizeof(address)) < 0)
     {
         throw netpp::Exception("Failed to bind socket", netpp::ERR_CODE::SOCKET_BINDING);
     }
 
-    if (listen(serverFd.get(), static_cast<int>(maxConnections)) < 0)
+    if (listen(serverFd->get(), static_cast<int>(maxConnections)) < 0)
     {
         throw netpp::Exception("Failed to listen on socket", netpp::ERR_CODE::SOCKET_LISTENING);
     }
@@ -39,9 +39,9 @@ void HttpServer::run()
     std::vector<std::thread> workers;
     for (size_t i = 0; i < numThreads; ++i)
     {
-        int socketFd = serverFd.get();
-        workers.emplace_back([this, socketFd]()
-                             { runWorker(socketFd); });
+        int socketFd = serverFd->get();
+        workers.emplace_back([this, serverFd]()
+                             { runWorker(serverFd->get()); });
     }
 
     for (auto &worker : workers)
@@ -54,7 +54,6 @@ void HttpServer::setHttpHandler(const std::string &method, const std::string &pa
 {
     auto endpoint = std::make_shared<HttpEndpoint>(method, path);
     httpHandlers[endpoint] = std::move(handler);
-    // if (path == "/79612E78-ADD6-47FA-980D-B242A29F0D56") exit(0);
 }
 
 void HttpServer::setWebSocketHandler(WebSocketHandler handler)
@@ -64,8 +63,13 @@ void HttpServer::setWebSocketHandler(WebSocketHandler handler)
 
 void HttpServer::runWorker(int serverFd)
 {
+    if (serverFd < 0) {
+        std::cerr << "Invalid server socket" << std::endl;
+        return;
+    }
     while (working)
     {
+
         int clientFd = accept(serverFd, nullptr, nullptr);
         if (clientFd < 0)
         {
@@ -80,70 +84,106 @@ void HttpServer::runWorker(int serverFd)
             continue;
         }
 
-        std::thread([this, clientFd]()
-                    {
-            handleConnection(clientFd);
-            releaseConnection(); })
-            .detach();
+        // Ensure connection release
+        std::thread([this, clientFd]() {
+            try
+            {
+                handleConnection(clientFd);
+            }
+            catch (const std::exception &e)
+            {
+                std::cerr << "Error handling connection: " << e.what() << std::endl;
+            }
+            releaseConnection();
+        }).detach();
     }
 }
 
+struct ConnectionGuard {
+    std::function<void()> release;
+    ~ConnectionGuard() { release(); }
+};
+
 void HttpServer::handleConnection(int clientFd)
 {
-    std::stringstream error;
-    // Read HTTP request without SSL
+/*    ConnectionGuard guard = { [this]() { releaseConnection(); } };
+
     std::optional<HttpRequest> request = readHttpRequest(clientFd);
-    if (request)
-    {
+    if (request) {
         HttpResponse response;
         handleHttpRequest(*request, response);
-        sendHttpResponse(clientFd, response); // Modify sendHttpResponse to use regular socket write
-    }
-    else
-    {
+        sendHttpResponse(clientFd, response);
+    } else {
         handleWebSocketConnection(clientFd);
     }
 
+    close(clientFd);*/
+
+    // Set a timeout for idle connections
+    struct timeval timeout;
+    timeout.tv_sec = 10;  // 10 seconds timeout for inactivity
+    timeout.tv_usec = 0;
+
+    if (setsockopt(clientFd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0)
+    {
+        std::cerr << "Failed to set socket timeout: " << std::strerror(errno) << std::endl;
+        close(clientFd);
+        return;
+    }
+
+    ConnectionGuard guard = { [this]() { releaseConnection(); } };
+
+    // Attempt to read the HTTP request
+    std::optional<HttpRequest> request = readHttpRequest(clientFd);
+
+    if (request) {
+        // Handle HTTP requests
+        HttpResponse response;
+        handleHttpRequest(*request, response);
+        sendHttpResponse(clientFd, response);
+    } else {
+        // Handle WebSocket or timeout
+        char buffer[1];
+        ssize_t result = recv(clientFd, buffer, sizeof(buffer), MSG_PEEK);
+
+        if (result < 0 && (errno == EWOULDBLOCK || errno == EAGAIN)) {
+            std::cerr << "Connection timed out (idle)." << std::endl;
+        } else if (result == 0) {
+            std::cerr << "Client disconnected." << std::endl;
+        } else {
+            // Proceed with WebSocket handling if there's valid input
+            handleWebSocketConnection(clientFd);
+        }
+    }
+
+    // Close the connection when done
     close(clientFd);
 }
 
 std::optional<HttpRequest> HttpServer::readHttpRequest(int clientFd)
 {
     const int MAX_REQUEST_SIZE = 8192; // Maximum size of the request buffer
-    char requestBuffer[MAX_REQUEST_SIZE];
-
+    std::vector<char> requestBuffer(MAX_REQUEST_SIZE, 0);
     int totalBytesRead = 0;
 
     // Read the request line and headers
-    while (totalBytesRead < MAX_REQUEST_SIZE)
-    {
-        int bytesRead = read(clientFd, requestBuffer + bytesRead, MAX_REQUEST_SIZE - bytesRead);
-        if (bytesRead <= 0)
-        {
-            // Error or connection closed
+    while (totalBytesRead < MAX_REQUEST_SIZE) {
+        int bytesRead = read(clientFd, &requestBuffer[totalBytesRead], MAX_REQUEST_SIZE - totalBytesRead);
+        if (bytesRead <= 0) {
+            // Handle read error or connection close
             return std::nullopt;
         }
-
         totalBytesRead += bytesRead;
 
-        // Check if we've reached   the end of headers
-        char *endOfHeaders = strstr(requestBuffer, "\r\n\r\n");
-        if (endOfHeaders)
-        {
-            // Null-terminate the request buffer
-            *endOfHeaders = '\0';
+        // Check for "\r\n\r\n" indicating end of headers
+        auto endOfHeaders = std::search(requestBuffer.begin(), requestBuffer.begin() + totalBytesRead,
+                                        "\r\n\r\n", "\r\n\r\n" + 4);
+        if (endOfHeaders != requestBuffer.begin() + totalBytesRead) {
             break;
-        }
-
-        // Check if the request buffer is full
-        if (bytesRead == MAX_REQUEST_SIZE)
-        {
-            // Request is too large, return an error
-            return std::nullopt;
         }
     }
 
-    std::string requestStr(requestBuffer);
+    std::string requestStr(requestBuffer.data(), totalBytesRead);
     std::istringstream requestStream(requestStr);
 
     // Parse the request line
@@ -184,7 +224,7 @@ std::optional<HttpRequest> HttpServer::readHttpRequest(int clientFd)
     }
 
     // Read the request body (if present)
-    std::string body(requestBuffer + strlen(requestBuffer) + 4); // Skip the "\r\n\r\n"
+    std::string body(requestBuffer.data() + requestBuffer.size() + 4); // Skip the "\r\n\r\n"
     request.setBody(body);
 
     struct sockaddr_storage clientAddr;
@@ -209,7 +249,7 @@ void HttpServer::handleHttpRequest(const HttpRequest &request, HttpResponse &res
     std::lock_guard<std::mutex> lock(handlersMutex);
     auto endpoint = std::make_shared<HttpEndpoint>(request.getMethod(), request.getPath());
     auto it = httpHandlers.find(endpoint);
-    
+
     if (it != httpHandlers.end())
     {
         it->second(request, response);
@@ -464,18 +504,21 @@ bool HttpServer::readWebSocketFrame(int clientFd, WebSocketFrame &frame)
 bool HttpServer::tryAcquireConnection()
 {
     std::lock_guard<std::mutex> lock(connectionsMutex);
-    if (currentConnections >= maxConnections)
+    if (currentConnections < maxConnections)
     {
-        return false;
+        ++currentConnections;
+        std::cout << "Connection acquired. Current connections: " << currentConnections << std::endl;
+        return true;
     }
-    ++currentConnections;
-    return true;
+    std::cerr << "Connection limit reached. Current connections: " << currentConnections << std::endl;
+    return false;
 }
 
 void HttpServer::releaseConnection()
 {
     std::lock_guard<std::mutex> lock(connectionsMutex);
-    --currentConnections;
+    if (currentConnections > 0)
+        --currentConnections;
 }
 
 std::string HttpServer::generateHttpResponse(const HttpResponse &response)
