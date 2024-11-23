@@ -8,6 +8,7 @@
 #include "http/Response.hpp"
 #include "util/String.hpp"
 #include "Exception.hpp"
+#include "http/Path.hpp"
 
 HttpServer::HttpServer(std::string host, std::string port, size_t maxConnections, size_t numThreads)
     : host(std::move(host)), port(std::move(port)), maxConnections(maxConnections),
@@ -248,8 +249,30 @@ void HttpServer::handleHttpRequest(const HttpRequest &request, HttpResponse &res
 {
     std::lock_guard<std::mutex> lock(handlersMutex);
     auto endpoint = std::make_shared<HttpEndpoint>(request.getMethod(), request.getPath());
-    auto it = httpHandlers.find(endpoint);
 
+    std::string requestPath = request.getPath();
+    HttpHandler handler = nullptr;
+    for (const auto &item: httpHandlers) {
+        if (item.first->getHttpMethod() == request.getMethod()) {
+            std::string handlerPath = item.first->getPath();
+            std::unique_ptr<Path> pathMatcher = std::make_unique<Path>(handlerPath);
+            if (pathMatcher->match(requestPath)) {
+                handler = item.second;
+                break;
+            }
+        }
+    }
+
+    if (handler != nullptr) {
+        handler(request, response);
+    }
+    else
+    {
+        response.setStatus(404);
+        response.setBody("Not Found");
+    }
+
+    /*auto it = httpHandlers.find(endpoint);
     if (it != httpHandlers.end())
     {
         it->second(request, response);
@@ -258,7 +281,7 @@ void HttpServer::handleHttpRequest(const HttpRequest &request, HttpResponse &res
     {
         response.setStatus(404);
         response.setBody("Not Found");
-    }
+    }*/
 }
 
 void HttpServer::sendHttpResponse(int clientFd, const HttpResponse &response)

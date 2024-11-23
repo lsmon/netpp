@@ -1,5 +1,6 @@
 #include "http/Server.hpp"
 #include "http/Method.hpp"
+#include "http/Path.hpp"
 #include <csignal>
 #include <cstdlib>
 #include <string>
@@ -75,6 +76,16 @@ void testHttpMethodsForServer() {
             response.setStatus(200);
             return ;
         });
+
+    serverHttp->setHttpHandler(
+            HttpMethod::GET, "/having/a/nice/{day}", [](const HttpRequest &request, HttpResponse &response)
+            {
+                std::cout << request.getVersion() << std::endl;
+                std::cout << "Hello, World GET Message response" << std::endl;
+                response.setBody("Hello, World!");
+                response.setStatus(200);
+                return ;
+            });
 
     serverHttp->setHttpHandler(
         HttpMethod::POST, "/", [](const HttpRequest &request, HttpResponse &response)
@@ -165,9 +176,90 @@ void testHttpMethodsForServer() {
     std::cout << "Server terminated" << std::endl;
 }
 
+void testPathParsing() {
+    // Define patterns
+    std::string pathPattern1 = "/path/{key1}/{key2}";
+    std::string pathPattern2 = "/path/{key1}/{key2}/path2";
+    std::string pathPattern3 = "/path/{key1}/path2/{key2}/path3";
+    std::string pathPattern4 = "/path/{key1}";
+
+    Path matcher1(pathPattern1);
+    Path matcher2(pathPattern2);
+    Path matcher3(pathPattern3);
+    Path matcher4(pathPattern4);
+
+    // Test paths
+    std::string path1 = "/path/value1/value2";
+    std::string path2 = "/path/value1/value2/path2";
+    std::string path3 = "/path/value1/path2/value2/path3";
+    std::string path4 = "/path/value1";
+    std::string path5 = "/path/path2/value1";
+
+    // Store results
+    std::optional<std::map<std::string, std::string>> params;
+
+    std::cout << "Matching results:\n";
+
+    // Test path 1
+    if (matcher1.match(path1)) {
+        params = matcher1.getPathParamMap();
+        std::cout << "Path 1 matches pattern 1. Params:\n";
+        for (const auto &param : *params) {
+            std::cout << param.first << ": " << param.second << "\n";
+        }
+    } else {
+        std::cout << "Path 1 does not match pattern 1.\n";
+    }
+
+    // Test path 2
+    if (matcher2.match(path2)) {
+        params = matcher2.getPathParamMap();
+        std::cout << "Path 2 matches pattern 2. Params:\n";
+        for (const auto &param : *params) {
+            std::cout << param.first << ": " << param.second << "\n";
+        }
+    } else {
+        std::cout << "Path 2 does not match pattern 2.\n";
+    }
+
+    // Test path 3
+    if (matcher3.match(path3)) {
+        params = matcher3.getPathParamMap();
+        std::cout << "Path 3 matches pattern 3. Params:\n";
+        for (const auto &param : *params) {
+            std::cout << param.first << ": " << param.second << "\n";
+        }
+    } else {
+        std::cout << "Path 3 does not match pattern 3.\n";
+    }
+
+    // Test path 4
+    if (matcher4.match(path4)) {
+        params = matcher4.getPathParamMap();
+        std::cout << "Path 4 matches pattern 4. Params:\n";
+        for (const auto &param : *params) {
+            std::cout << param.first << ": " << param.second << "\n";
+        }
+    } else {
+        std::cout << "Path 4 does not match pattern 4.\n";
+    }
+
+    // Test path 5 (non-matching case)
+    if (matcher4.match(path5)) {
+        params = matcher4.getPathParamMap();
+        std::cout << "Path 5 matches pattern 4. Params:\n";
+        for (const auto &param : *params) {
+            std::cout << param.first << ": " << param.second << "\n";
+        }
+    } else {
+        std::cout << "Path 5 does not match pattern 4.\n";
+    }
+}
+
 int main()
 {
     testHttpMethodsForServer();
+//    testPathParsing();
 
     return EXIT_SUCCESS;
 }

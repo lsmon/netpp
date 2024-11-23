@@ -46,7 +46,7 @@ message(STATUS "INFO -- CONFIGURE FINISHED")
 
 #enable_testing()
 
-#include(test/CMakeLists.txt)
+include(test/CMakeLists.txt)
 
 set(LIB_PROJECT "${PROJECT_NAME}-${PROJECT_VERSION}")
 
