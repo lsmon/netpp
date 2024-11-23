@@ -30,7 +30,9 @@ void signalHandler(int signal) {
         case SIGCHLD: std::cerr << "Child terminated or stopped." << std::endl; break;
         case SIGTTIN: std::cerr << "Background read from control terminal." << std::endl; break;
         case SIGTTOU: std::cerr << "Background write to control terminal." << std::endl; break;
+#ifdef __linux__
         case SIGPOLL: std::cerr << "Pollable event occurred (System V)." << std::endl; break;
+#endif
         case SIGXCPU: std::cerr << "CPU time limit exceeded." << std::endl; break;
         case SIGXFSZ: std::cerr << "File size limit exceeded." << std::endl; break;
         case SIGVTALRM: std::cerr << "Virtual timer expired." << std::endl; break;

@@ -177,8 +177,12 @@ std::optional<HttpRequest> HttpServer::readHttpRequest(int clientFd)
         totalBytesRead += bytesRead;
 
         // Check for "\r\n\r\n" indicating end of headers
-        auto endOfHeaders = std::search(requestBuffer.begin(), requestBuffer.begin() + totalBytesRead,
-                                        "\r\n\r\n", "\r\n\r\n" + 4);
+        const char* headerDelimiter = "\r\n\r\n";
+        auto endOfHeaders = std::search(
+            requestBuffer.begin(), 
+            requestBuffer.begin() + totalBytesRead, 
+            headerDelimiter, 
+            headerDelimiter + 4);
         if (endOfHeaders != requestBuffer.begin() + totalBytesRead) {
             break;
         }
