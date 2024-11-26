@@ -2,13 +2,14 @@
 #include "http/Method.hpp"
 #include "http/Client.hpp"
 #include "http/Response.hpp"
+#include "http/Path.hpp"
 #include <string.h>
 
 void testHttpServer()
 {
     HttpServer serverHttp("localhost", "8080", 1024, 4);
 
-    serverHttp.setHttpHandler(HttpMethod::GET, "/greetings", [](const HttpRequest &, HttpResponse &response)
+    serverHttp.setHttpHandler(HttpMethod::GET, "/greetings", [](const HttpRequest &, HttpResponse &response, Path *path)
                               { response.setBody("Hello, World!"); });
 
     serverHttp.run();
