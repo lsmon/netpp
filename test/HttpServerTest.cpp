@@ -54,7 +54,7 @@ void testHttpServer()
 
     // 79612E78-ADD6-47FA-980D-B242A29F0D56 test flag
     serverHttp->setHttpHandler(
-        HttpMethod::GET, "/79612E78-ADD6-47FA-980D-B242A29F0D56", [](const HttpRequest &request, HttpResponse &response)
+        HttpMethod::GET, "/79612E78-ADD6-47FA-980D-B242A29F0D56", [](const HttpRequest &request, HttpResponse &response, Path* path)
         { 
             std::cout << request.getVersion() << std::endl;
             std::cout << "Hello, World Message response" << std::endl;
@@ -70,7 +70,7 @@ void testHttpMethodsForServer() {
 
     // 79612E78-ADD6-47FA-980D-B242A29F0D56 test flag
     serverHttp->setHttpHandler(
-        HttpMethod::GET, "/", [](const HttpRequest &request, HttpResponse &response)
+        HttpMethod::GET, "/", [](const HttpRequest &request, HttpResponse &response, Path* path)
         { 
             std::cout << request.getVersion() << std::endl;
             std::cout << "Hello, World GET Message response" << std::endl;
@@ -80,8 +80,12 @@ void testHttpMethodsForServer() {
         });
 
     serverHttp->setHttpHandler(
-            HttpMethod::GET, "/having/a/nice/{day}", [](const HttpRequest &request, HttpResponse &response)
+            HttpMethod::GET, "/having/a/nice/{day}", [](const HttpRequest &request, HttpResponse &response, Path* path)
             {
+                if (path != nullptr || !path->getPathParamMap().empty())
+                    for (auto &item : path->getPathParamMap()) {
+                        std::cout << item.first << " : " << item.second << std::endl;
+                    }
                 std::cout << request.getVersion() << std::endl;
                 std::cout << "Hello, World GET Message response" << std::endl;
                 response.setBody("Hello, World!");
@@ -90,7 +94,7 @@ void testHttpMethodsForServer() {
             });
 
     serverHttp->setHttpHandler(
-        HttpMethod::POST, "/", [](const HttpRequest &request, HttpResponse &response)
+        HttpMethod::POST, "/", [](const HttpRequest &request, HttpResponse &response, Path* path)
         { 
             std::cout << request.getVersion() << std::endl;
             std::cout << "Hello, World " << HttpMethod::POST << " Message response" << std::endl;
@@ -100,7 +104,7 @@ void testHttpMethodsForServer() {
         });
     
     serverHttp->setHttpHandler(
-        HttpMethod::PUT, "/", [](const HttpRequest &request, HttpResponse &response)
+        HttpMethod::PUT, "/", [](const HttpRequest &request, HttpResponse &response, Path* path)
         { 
             std::cout << request.getVersion() << std::endl;
             std::cout << "Hello, World " << HttpMethod::PUT << " Message response" << std::endl;
@@ -110,7 +114,7 @@ void testHttpMethodsForServer() {
         });
 
     serverHttp->setHttpHandler(
-        HttpMethod::DELETE, "/", [](const HttpRequest &request, HttpResponse &response)
+        HttpMethod::DELETE, "/", [](const HttpRequest &request, HttpResponse &response, Path* path)
         { 
             std::cout << request.getVersion() << std::endl;
             std::cout << "Hello, World " << HttpMethod::DELETE << " Message response" << std::endl;
@@ -120,7 +124,7 @@ void testHttpMethodsForServer() {
         });
 
     serverHttp->setHttpHandler(
-        HttpMethod::HEAD, "/", [](const HttpRequest &request, HttpResponse &response)
+        HttpMethod::HEAD, "/", [](const HttpRequest &request, HttpResponse &response, Path* path)
         { 
             std::cout << request.getVersion() << std::endl;
             response.addHeader("hello", "world");
@@ -130,7 +134,7 @@ void testHttpMethodsForServer() {
         });
 
     serverHttp->setHttpHandler(
-        HttpMethod::OPTIONS, "/", [](const HttpRequest &request, HttpResponse &response)
+        HttpMethod::OPTIONS, "/", [](const HttpRequest &request, HttpResponse &response, Path* path)
         { 
             std::cout << request.getVersion() << std::endl;
             std::cout << "Hello, World " << HttpMethod::OPTIONS << " Message response" << std::endl;
@@ -140,7 +144,7 @@ void testHttpMethodsForServer() {
         });
 
     serverHttp->setHttpHandler(
-        HttpMethod::CONNECT, "/", [](const HttpRequest &request, HttpResponse &response)
+        HttpMethod::CONNECT, "/", [](const HttpRequest &request, HttpResponse &response, Path* path)
         { 
             std::cout << request.getVersion() << std::endl;
             std::cout << "Hello, World " << HttpMethod::CONNECT << " Message response" << std::endl;
@@ -150,7 +154,7 @@ void testHttpMethodsForServer() {
         });
 
     serverHttp->setHttpHandler(
-        HttpMethod::PATCH, "/", [](const HttpRequest &request, HttpResponse &response)
+        HttpMethod::PATCH, "/", [](const HttpRequest &request, HttpResponse &response, Path* path)
         { 
             std::cout << request.getVersion() << std::endl;
             std::cout << "Hello, World " << HttpMethod::PATCH << " Message response" << std::endl;
@@ -160,7 +164,7 @@ void testHttpMethodsForServer() {
         });
 
     serverHttp->setHttpHandler(
-        HttpMethod::TRACE, "/", [](const HttpRequest &request, HttpResponse &response)
+        HttpMethod::TRACE, "/", [](const HttpRequest &request, HttpResponse &response, Path* path)
         { 
             std::cout << request.getVersion() << std::endl;
             std::cout << "Hello, World " << HttpMethod::TRACE << " Message response" << std::endl;

@@ -7,13 +7,14 @@
 #include "http/Structures.hpp"
 #include "http/Request.hpp"
 #include "http/Client.hpp"
+#include "http/Path.hpp"
 
 /**
      * @brief Defines the type for HTTP request handler functions.
      * @param request The HTTP request object.
      * @param response The HTTP response object to be generated.
      */
-using HttpHandler = std::function<void(const HttpRequest&, HttpResponse&)>;
+using HttpHandler = std::function<void(const HttpRequest&, HttpResponse&, Path*)>;
 
 class HttpEndpoint {
 private:

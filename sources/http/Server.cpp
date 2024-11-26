@@ -259,19 +259,17 @@ void HttpServer::handleHttpRequest(const HttpRequest &request, HttpResponse &res
     for (const auto &item: httpHandlers) {
         if (item.first->getHttpMethod() == request.getMethod()) {
             std::string handlerPath = item.first->getPath();
-            std::unique_ptr<Path> pathMatcher = std::make_unique<Path>(handlerPath);
-            if (pathMatcher->match(requestPath)) {
+            Path* path = new Path(handlerPath);
+            if (path->match(requestPath)) {
                 handler = item.second;
+                handler(request, response, path);
                 break;
             }
+            delete path;
         }
     }
 
-    if (handler != nullptr) {
-        handler(request, response);
-    }
-    else
-    {
+    if (handler == nullptr) {
         response.setStatus(404);
         response.setBody("Not Found");
     }
