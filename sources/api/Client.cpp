@@ -20,6 +20,7 @@ ApiClient::~ApiClient() {
 #endif
 }
 
+#ifdef OPENSSL_ENABLED
 void ApiClient::initializeSSL() {
     SSL_library_init();
     SSL_load_error_strings();
@@ -29,6 +30,7 @@ void ApiClient::initializeSSL() {
 void ApiClient::cleanupSSL() {
     EVP_cleanup();
 }
+#endif
 
 void ApiClient::parseUrl(const std::string& url, std::string& host, std::string& path, int& port, bool& isHttps) {
     isHttps = false;
@@ -200,4 +202,37 @@ ApiClient::get(const std::string &url, const std::string &data, const std::map<s
 HttpResponse
 ApiClient::post(const std::string& url, const std::string& data, const std::map<std::string, std::string>& headers) {
     return request(url, HTTP_METHOD::POST, data, headers);
+}
+
+HttpResponse
+ApiClient::put(const std::string &url, const std::string &data, const std::map<std::string, std::string> &headers) {
+    return request(url, HTTP_METHOD::PUT, data, headers);
+}
+
+HttpResponse ApiClient::deleteReq(const std::string &url, const std::string& data,  const std::map<std::string, std::string> &headers) {
+    return request(url, HTTP_METHOD::DELETE, data, headers);
+}
+
+HttpResponse
+ApiClient::head(const std::string &url, const std::string &data, const std::map<std::string, std::string> &headers) {
+    return request(url, HTTP_METHOD::HEAD, data, headers);
+}
+
+HttpResponse
+ApiClient::options(const std::string &url, const std::string &data, const std::map<std::string, std::string> &headers) {
+    return request(url, HTTP_METHOD::OPTIONS, data, headers);
+}
+
+HttpResponse ApiClient::connect(const std::string &url, const std::map<std::string, std::string> &headers) {
+    return request(url, HTTP_METHOD::CONNECT, "", headers);
+}
+
+HttpResponse
+ApiClient::patch(const std::string &url, const std::string &data, const std::map<std::string, std::string> &headers) {
+    return request(url, HTTP_METHOD::PATCH, data, headers);
+}
+
+HttpResponse
+ApiClient::trace(const std::string &url, const std::string &data, const std::map<std::string, std::string> &headers) {
+    return request(url, HTTP_METHOD::TRACE, data, headers);
 }
