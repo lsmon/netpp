@@ -6,7 +6,7 @@
 #include "http/Method.hpp"
 #include "http/Structures.hpp"
 #include "http/Request.hpp"
-#include "http/Client.hpp"
+#include "http/Response.hpp"
 #include "http/Path.hpp"
 
 /**

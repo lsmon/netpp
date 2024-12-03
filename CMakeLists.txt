@@ -50,7 +50,8 @@ include(test/CMakeLists.txt)
 
 set(LIB_PROJECT "${PROJECT_NAME}-${PROJECT_VERSION}")
 
-add_library(_${LIB_PROJECT} ${HEADERS_SERVER} ${SOURCES_SERVER} ${SOURCES_CLIENT} ${HEADERS_CLIENT})
+#add_library(_${LIB_PROJECT} ${HEADERS_SERVER} ${SOURCES_SERVER} ${SOURCES_CLIENT} ${HEADERS_CLIENT})
+add_library(_${LIB_PROJECT} ${HEADERS_SERVER} ${SOURCES_SERVER})
 
 target_include_directories(_${LIB_PROJECT}
     PUBLIC
@@ -64,4 +65,4 @@ target_link_libraries(_${LIB_PROJECT} ${OPENSSL_LIBRARIES} stdc++fs)
 # add_test(TEST_SERVER ${PROJECT_NAME}_test server)
 # add_test(TEST_CLIENT ${PROJECT_NAME}_test https)
 
-#include(cpack/CMakeLists.txt)
+include(cpack/CMakeLists.txt)

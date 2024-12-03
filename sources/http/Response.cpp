@@ -1,9 +1,5 @@
 #include "http/Response.hpp"
 #include "util/String.hpp"
-#include <iostream>
-#include <istream>
-#include <string>
-#include <locale>
 #include <string>
 
 HttpResponse HttpResponse::parse(const std::string &msg)
