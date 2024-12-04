@@ -21,7 +21,7 @@ set(INC_UTIL
         ${CMAKE_CURRENT_SOURCE_DIR}/include/util/String.hpp)
 
 set(HEADERS_SERVER
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/config.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/netppconfig.h
         ${INC_SRV}
         ${INC_UTIL})
 

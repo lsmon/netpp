@@ -5,17 +5,14 @@
 #include <map>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
-#include "config.h"
 #include "http/Response.hpp"
 #include "http/Method.hpp"
+#include "netppconfig.h"
 
 class ApiClient {
 public:
     ApiClient();
     ~ApiClient();
-
-    // Synchronous GET
-    HttpResponse get(const std::string& url, const std::map<std::string, std::string>& headers = {});
 
     // Synchronous GET
     HttpResponse get(const std::string& url, const std::string& data, const std::map<std::string, std::string>& headers = {});
@@ -31,7 +28,7 @@ public:
 
     HttpResponse options(const std::string& url, const std::string& data = "", const std::map<std::string, std::string>& headers = {});
 
-    HttpResponse connect(const std::string& url, const std::map<std::string, std::string>& headers = {});
+    HttpResponse connectReq(const std::string& url, const std::map<std::string, std::string>& headers = {});
 
     HttpResponse patch(const std::string& url, const std::string& data = "", const std::map<std::string, std::string>& headers = {});
 

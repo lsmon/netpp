@@ -8,7 +8,7 @@ set(INC_CLT
         include/util/URL.hpp
         include/util/String.hpp
         include/Exception.hpp
-        include/config.h)
+        include/netppconfig.h)
 
 set(HEADERS_CLIENT ${INC_CLT})
 

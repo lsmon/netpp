@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include "api/Client.hpp"
 #include "Exception.hpp"
-
+#include "netppconfig.h"
 
 ApiClient::ApiClient() {
 #ifdef OPENSSL_ENABLED
@@ -190,10 +190,6 @@ HttpResponse ApiClient::request(const std::string &url, const HTTP_METHOD &metho
     return HttpResponse::parse(response);
 }
 
-HttpResponse ApiClient::get(const std::string& url, const std::map<std::string, std::string>& headers) {
-    return request(url, HTTP_METHOD::GET, "", headers);
-}
-
 HttpResponse
 ApiClient::get(const std::string &url, const std::string &data, const std::map<std::string, std::string> &headers) {
     return request(url, HTTP_METHOD::GET, data, headers);
@@ -223,7 +219,7 @@ ApiClient::options(const std::string &url, const std::string &data, const std::m
     return request(url, HTTP_METHOD::OPTIONS, data, headers);
 }
 
-HttpResponse ApiClient::connect(const std::string &url, const std::map<std::string, std::string> &headers) {
+HttpResponse ApiClient::connectReq(const std::string &url, const std::map<std::string, std::string> &headers) {
     return request(url, HTTP_METHOD::CONNECT, "", headers);
 }
 

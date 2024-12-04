@@ -35,7 +35,7 @@ endif()
 
 find_package(Threads REQUIRED)
 
-configure_file(config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/config.h)
+configure_file(config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/netppconfig.h)
 
 include(http-server.cmake)
 include(http-client.cmake)
