@@ -8,7 +8,7 @@ void testHttpClient()
     {
         ApiClient client;
         std::string url = "http://localhost:8080/79612E78-ADD6-47FA-980D-B242A29F0D56";
-        auto response = client.get(url);
+        auto response = client.get(url, "");
         std::cout << "GET Status: " << std::to_string(response.getStatus()) << "\n";
         std::cout << "GET Body: " << response.getBody() << "\n";
 //        std::cout << "GET Response: " << response << "\n";
@@ -25,7 +25,7 @@ void testHttpGetApiClient()
     {
         ApiClient client;
         std::string url = "https://postman-echo.com/get?foo1=bar1&foo2=bar2";
-        auto response = client.get(url);
+        auto response = client.get(url, "");
         std::cout << "GET Status: " << std::to_string(response.getStatus()) << "\n";
         std::cout << "GET Body: " << response.getBody() << "\n";
 //        std::cout << "GET Response: " << response << "\n";
