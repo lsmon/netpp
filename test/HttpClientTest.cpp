@@ -42,7 +42,7 @@ void testHttpPostApiClient()
     {
         ApiClient client;
         std::string postData = "{\"title\": \"foo\", \"body\": \"bar\", \"userId\": 1}";
-        std::map<std::string, std::string> headers = {
+        std::unordered_map<std::string, std::string> headers = {
                 {"Content-Type", "application/json"}
         };
         std::string url = "https://postman-echo.com/post";

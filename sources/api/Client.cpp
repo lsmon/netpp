@@ -129,7 +129,7 @@ std::string ApiClient::sendRequest(int sock, const std::string& request, bool is
 }
 
 HttpResponse ApiClient::request(const std::string &url, const HTTP_METHOD &method, const std::string &data,
-                                const std::map<std::string, std::string> &headers) {
+                                const std::unordered_map<std::string, std::string> &headers) {
     // Parse the URL into host, path, port, and isHttps
     std::string host, path;
     int port;
@@ -191,44 +191,44 @@ HttpResponse ApiClient::request(const std::string &url, const HTTP_METHOD &metho
 }
 
 HttpResponse
-ApiClient::get(const std::string &url, const std::string &data, const std::map<std::string, std::string> &headers) {
+ApiClient::get(const std::string &url, const std::string &data, const std::unordered_map<std::string, std::string> &headers) {
     return request(url, HTTP_METHOD::GET, data, headers);
 }
 
 HttpResponse
-ApiClient::post(const std::string& url, const std::string& data, const std::map<std::string, std::string>& headers) {
+ApiClient::post(const std::string& url, const std::string& data, const std::unordered_map<std::string, std::string>& headers) {
     return request(url, HTTP_METHOD::POST, data, headers);
 }
 
 HttpResponse
-ApiClient::put(const std::string &url, const std::string &data, const std::map<std::string, std::string> &headers) {
+ApiClient::put(const std::string &url, const std::string &data, const std::unordered_map<std::string, std::string> &headers) {
     return request(url, HTTP_METHOD::PUT, data, headers);
 }
 
-HttpResponse ApiClient::deleteReq(const std::string &url, const std::string& data,  const std::map<std::string, std::string> &headers) {
+HttpResponse ApiClient::deleteReq(const std::string &url, const std::string& data,  const std::unordered_map<std::string, std::string> &headers) {
     return request(url, HTTP_METHOD::DELETE, data, headers);
 }
 
 HttpResponse
-ApiClient::head(const std::string &url, const std::string &data, const std::map<std::string, std::string> &headers) {
+ApiClient::head(const std::string &url, const std::string &data, const std::unordered_map<std::string, std::string> &headers) {
     return request(url, HTTP_METHOD::HEAD, data, headers);
 }
 
 HttpResponse
-ApiClient::options(const std::string &url, const std::string &data, const std::map<std::string, std::string> &headers) {
+ApiClient::options(const std::string &url, const std::string &data, const std::unordered_map<std::string, std::string> &headers) {
     return request(url, HTTP_METHOD::OPTIONS, data, headers);
 }
 
-HttpResponse ApiClient::connectReq(const std::string &url, const std::map<std::string, std::string> &headers) {
+HttpResponse ApiClient::connectReq(const std::string &url, const std::unordered_map<std::string, std::string> &headers) {
     return request(url, HTTP_METHOD::CONNECT, "", headers);
 }
 
 HttpResponse
-ApiClient::patch(const std::string &url, const std::string &data, const std::map<std::string, std::string> &headers) {
+ApiClient::patch(const std::string &url, const std::string &data, const std::unordered_map<std::string, std::string> &headers) {
     return request(url, HTTP_METHOD::PATCH, data, headers);
 }
 
 HttpResponse
-ApiClient::trace(const std::string &url, const std::string &data, const std::map<std::string, std::string> &headers) {
+ApiClient::trace(const std::string &url, const std::string &data, const std::unordered_map<std::string, std::string> &headers) {
     return request(url, HTTP_METHOD::TRACE, data, headers);
 }
