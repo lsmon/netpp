@@ -162,7 +162,7 @@ HttpResponse ApiClient::request(const std::string &url, const HTTP_METHOD &metho
     }
 
     // If the method supports a body, include Content-Length and the data payload
-    if (method == HTTP_METHOD::POST || method == HTTP_METHOD::PUT || method == HTTP_METHOD::PATCH) {
+    if (method == HTTP_METHOD::GET || method == HTTP_METHOD::POST || method == HTTP_METHOD::PUT || method == HTTP_METHOD::PATCH) {
         request << "Content-Length: " << data.size() << "\r\n";
     }
 
@@ -170,7 +170,7 @@ HttpResponse ApiClient::request(const std::string &url, const HTTP_METHOD &metho
     request << "Connection: close\r\n\r\n";
 
     // Append the data payload if needed
-    if (!data.empty() && (method == HTTP_METHOD::POST || method == HTTP_METHOD::PUT || method == HTTP_METHOD::PATCH)) {
+    if (!data.empty() && (method == HTTP_METHOD::GET ||method == HTTP_METHOD::POST || method == HTTP_METHOD::PUT || method == HTTP_METHOD::PATCH)) {
         request << data;
     }
 
