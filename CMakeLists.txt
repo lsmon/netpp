@@ -44,9 +44,11 @@ message(STATUS "INFO -- _${LIB_NAME_SERVER}")
 message(STATUS "INFO -- _${LIB_NAME_CLIENT}")
 message(STATUS "INFO -- CONFIGURE FINISHED")
 
-#enable_testing()
+if (BUILD_TESTING)
+    enable_testing()
 
-include(test/CMakeLists.txt)
+    include(test/CMakeLists.txt)
+endif()
 
 set(LIB_PROJECT "${PROJECT_NAME}-${PROJECT_VERSION}")
 

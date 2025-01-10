@@ -2,45 +2,47 @@
 set(LIB_NAME_SERVER "${PROJECT_NAME}-http-server-${PROJECT_VERSION}")
 
 set(INC_SRV
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/http/ContentType.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/http/Server.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/http/Method.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/http/Handler.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/http/Structures.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/http/Request.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/http/Response.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/http/Status.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/http/QueryString.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/http/WebSocketFrame.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/util/URL.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/http/Path.hpp)
+        include/http/ContentType.hpp
+        include/http/Server.hpp
+        include/http/Method.hpp
+        include/http/Handler.hpp
+        include/http/Structures.hpp
+        include/http/Request.hpp
+        include/http/Response.hpp
+        include/http/Status.hpp
+        include/http/QueryString.hpp
+        include/http/WebSocketFrame.hpp
+        include/http/Path.hpp)
 
 set(INC_UTIL 
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/Exception.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/util/UUID.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/util/String.hpp)
+        include/util/URL.hpp
+        include/util/UUID.hpp
+        include/util/String.hpp)
+
+set(INC include/Exception.hpp
+        include/netppconfig.h)
 
 set(HEADERS_SERVER
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/netppconfig.h
         ${INC_SRV}
-        ${INC_UTIL})
+        ${INC_UTIL}
+        ${INC})
 
 set(SOURCES_SERVER 
-        ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/ContentType.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/Server.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/Handler.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/QueryString.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/Request.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/Response.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/Method.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/WebSocketFrame.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/sources/util/URL.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/sources/Exception.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/sources/util/UUID.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/sources/util/String.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/sources/http/Path.cpp)
+        sources/http/ContentType.cpp
+        sources/http/Server.cpp
+        sources/http/Handler.cpp
+        sources/http/QueryString.cpp
+        sources/http/Request.cpp
+        sources/http/Response.cpp
+        sources/http/Method.cpp
+        sources/http/WebSocketFrame.cpp
+        sources/util/URL.cpp
+        sources/Exception.cpp
+        sources/util/UUID.cpp
+        sources/util/String.cpp
+        sources/http/Path.cpp)
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+include_directories("include")
 
 add_library(_${LIB_NAME_SERVER} ${HEADERS_SERVER} ${SOURCES_SERVER})
 

@@ -2,9 +2,9 @@
 install(TARGETS _${LIB_PROJECT} DESTINATION lib)
 
 install(FILES ${INC_SRV} DESTINATION include/http)
-install(FILES ${INC_CLT} DESTINATION include/http)
+install(FILES ${INC_API_CLT} DESTINATION include/api)
 install(FILES ${INC_UTIL} DESTINATION include/util)
-
+install(FILES ${INC} DESTINATION include)
 # Set up CPack
 set(CPACK_PACKAGE_NAME "lib_${PROJECT_NAME}")
 set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")

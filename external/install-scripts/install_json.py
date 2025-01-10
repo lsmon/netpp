@@ -64,12 +64,10 @@ def build_json():
     os.chdir(json_path)
     os.makedirs(json_build, exist_ok=True)
 
-    os_name = platform.system()
-    print(os_name)
     print("cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -S" + json_path + " -B" + json_build)
     print("cmake --build " + json_build + " --config Debug --target all -j 12 --")
     cmake_bin = "";
-    if os_name == "Darwin": 
+    if os_type == "darwin": 
         cmake_bin = "/opt/homebrew/bin/cmake"
     else :
         cmake_bin = "cmake"

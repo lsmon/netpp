@@ -64,19 +64,17 @@ def build_logpp():
     os.chdir(logpp_path)
     os.makedirs(logpp_build, exist_ok=True)
 
-    os_name = platform.system()
-    print(os_name)
     # run_command("cmake -S " + logpp_path + " -B " + logpp_build)
     # run_command("cmake --build " + logpp_build + " -j 14")
     cmake_bin = "";
-    if os_name == "Darwin": 
+    if os_type == "darwin": 
         cmake_bin = "/opt/homebrew/bin/cmake"
     else :
         cmake_bin = "cmake"
     print(cmake_bin + " --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -S" + logpp_path + " -B" + logpp_build)
-    print(cmake_bin + " --build " + logpp_build + " --config Debug --target all -j 12 --")
+    print(cmake_bin + " --build " + logpp_build + " --config Debug --target all -j 12")
     run_command(cmake_bin + " --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -S" + logpp_path + " -B" + logpp_build)
-    run_command(cmake_bin + " --build " + logpp_build + " --config Debug --target all -j 12 --")
+    run_command(cmake_bin + " --build " + logpp_build + " --config Debug --target all -j 12")
 
     print("Building completed.")
 
@@ -89,13 +87,26 @@ def cpack_logpp():
     run_command("cpack -G ZIP")
 
 
+def copy_files_and_dirs(src, dst):
+    if not os.path.exists(dst):
+        os.makedirs(dst)
+    for filename in os.listdir(src):
+        src_file = os.path.join(src, filename)
+        dst_file = os.path.join(dst, filename)
+        if os.path.isfile(src_file):
+            print(f"copying {src_file} to {dst_file}")
+            shutil.copy(src_file, dst_file)
+        elif os.path.isdir(src_file):
+            copy_files_and_dirs(src_file, dst_file)
+
+
 def install_logpp():
     logpp_path = os.path.join(root_path, "logpp")
     logpp_build = os.path.join(logpp_path, "build")
     os_postfix = ""
     if os_type == "linux":
         os_postfix = "Linux"
-    elif os_type == "Darwin":
+    elif os_type == "darwin":
         os_postfix = "Darwin"
     logpp_libzip = os.path.join(logpp_build, f"lib_logpp-{version}-{os_postfix}.zip")
     logpp_libinc = os.path.join(logpp_build, f"lib_logpp-{version}-{os_postfix}/include")
@@ -115,11 +126,13 @@ def install_logpp():
         os.makedirs(inc_path)
         
     # Iterate over files in logpp_libinc and copy each file to inc_path
-    for filename in os.listdir(logpp_libinc):
-        src_file = os.path.join(logpp_libinc, filename)
-        if os.path.isfile(src_file):  # Only copy files (not directories)
-            print("copying " + src_file + " to " + inc_path)
-            shutil.copy(src_file, inc_path)
+    print(logpp_libinc)
+    copy_files_and_dirs(logpp_libinc, inc_path)
+    # for filename in os.listdir(logpp_libinc):
+    #     src_file = os.path.join(logpp_libinc, filename)
+    #     if os.path.isfile(src_file):  # Only copy files (not directories)
+    #         print("copying " + src_file + " to " + inc_path)
+    #         shutil.copy(src_file, inc_path)
     
     
 

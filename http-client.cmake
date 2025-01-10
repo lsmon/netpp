@@ -1,16 +1,20 @@
 
 set(LIB_NAME_CLIENT "${PROJECT_NAME}-http-client-${PROJECT_VERSION}")
 
-set(INC_CLT
-        include/api/Client.hpp
+set(INC_HTTP_CLT
         include/http/Method.hpp
-        include/http/Response.hpp
+        include/http/Response.hpp)
+
+set(INC_API_CLT include/api/Client.hpp)
+
+set(INC_CLT_UTIL
         include/util/URL.hpp
-        include/util/String.hpp
-        include/Exception.hpp
+        include/util/String.hpp)
+
+set(INC include/Exception.hpp
         include/netppconfig.h)
 
-set(HEADERS_CLIENT ${INC_CLT})
+set(HEADERS_CLIENT ${INC} ${INC_CLT_UTIL} ${INC_API_CLT} ${INC_HTTP_CLT})
 
 set(SOURCES_CLIENT
         sources/api/Client.cpp
