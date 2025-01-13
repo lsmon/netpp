@@ -56,9 +56,10 @@
 /lib
 /lib/lib_logpp-*
 /sources/.vscode/
-include/json/JSONArray.hpp
-include/json/JSONObject.hpp
-include/json/JSONParser.hpp
-include/json/JSONUtil.hpp
-include/json/JSONValue.hpp
-include/netppconfig.h
+/include/json/JSONArray.hpp
+/include/json/JSONObject.hpp
+/include/json/JSONParser.hpp
+/include/json/JSONUtil.hpp
+/include/json/JSONValue.hpp
+/include/netppconfig.h
+/include/logconfig.h
