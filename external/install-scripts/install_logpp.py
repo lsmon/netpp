@@ -84,7 +84,13 @@ def cpack_logpp():
     logpp_path = os.path.join(root_path, "logpp")
     logpp_build = os.path.join(logpp_path, "build")
     os.chdir(logpp_build)
-    run_command("cpack -G ZIP")
+     if os_type == "linux":
+        cpack = "/usr/bin/cpack"
+    elif os_type == "Darwin":
+        cpack = "/opt/homebrew/bin/cpack"
+    else:
+        cpack = "cpack"
+    run_command(cpack + " -G ZIP")
 
 
 def copy_files_and_dirs(src, dst):

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.11)
 project(netpp)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 set(PROJECT_VERSION_MAJOR 0)
