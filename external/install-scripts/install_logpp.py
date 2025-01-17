@@ -66,7 +66,7 @@ def build_logpp():
 
     # run_command("cmake -S " + logpp_path + " -B " + logpp_build)
     # run_command("cmake --build " + logpp_build + " -j 14")
-    cmake_bin = "";
+    cmake_bin = ""
     if os_type == "darwin": 
         cmake_bin = "/opt/homebrew/bin/cmake"
     else :
@@ -84,7 +84,7 @@ def cpack_logpp():
     logpp_path = os.path.join(root_path, "logpp")
     logpp_build = os.path.join(logpp_path, "build")
     os.chdir(logpp_build)
-     if os_type == "linux":
+    if os_type == "linux":
         cpack = "/usr/bin/cpack"
     elif os_type == "Darwin":
         cpack = "/opt/homebrew/bin/cpack"
