@@ -59,4 +59,11 @@ namespace netpp
 
 } // namespace netpp
 
+class NullptrException : public std::exception 
+{
+    public:
+    const char* what() const noexcept override {
+        return "nullptr exception: The pointer is null.";
+    }
+};
 #endif // NETPP_EXCEPTION_HPP
