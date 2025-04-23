@@ -3,6 +3,9 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <utility>
+#ifdef __linux__
+#include <cstring>
+#endif
 #include "http/Status.hpp"
 #include "http/Request.hpp"
 #include "http/Response.hpp"
