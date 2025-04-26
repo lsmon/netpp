@@ -3,6 +3,7 @@
 
 #include "netppconfig.h"
 #include <string>
+#include <cstdint>
 
 class WebSocketFrame
 {

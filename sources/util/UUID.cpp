@@ -41,12 +41,8 @@ std::string UUID::octet(int length)
 
 std::string UUID::toHexadecimal(unsigned char *buffer, size_t length)
 {
-    if (length < sizeof(unsigned char) * 4) {
-        throw std::invalid_argument("Buffer too small");
-    }
-
     std::stringstream ss;
-    for (size_t i = 0; i < 4; i++)
+    for (size_t i = 0; i < length; i++)
     {
         ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(buffer[i]);
     }

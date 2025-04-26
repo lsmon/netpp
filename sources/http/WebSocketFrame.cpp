@@ -1,5 +1,5 @@
 #include "http/WebSocketFrame.hpp"
-
+#include <cstdint>
 
 WebSocketFrame::WebSocketFrame(/* args */)
 {
