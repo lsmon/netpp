@@ -97,6 +97,7 @@ void testHttpMethodsForServer() {
         HttpMethod::POST, "/", [](const HttpRequest &request, HttpResponse &response, Path* path)
         { 
             std::cout << request.getVersion() << std::endl;
+            std::cout << request.getBody() << std::endl;
             std::cout << "Hello, World " << HttpMethod::POST << " Message response" << std::endl;
             response.setBody("Hello, World!");
             response.setStatus(200);

@@ -204,9 +204,9 @@ std::optional<HttpRequest> HttpServer::readHttpRequest(int clientFd)
     requestLineStream >> method >> path >> version;
 
     request.setMethod(method);
-
+    
     std::regex rx("\\?");
-
+    
     std::vector<std::string> split = String::tokenize(path, rx);
     if (split.size() > 1)
     {
@@ -232,9 +232,24 @@ std::optional<HttpRequest> HttpServer::readHttpRequest(int clientFd)
     }
 
     // Read the request body (if present)
-    std::string body(requestBuffer.data() + requestBuffer.size() + 4); // Skip the "\r\n\r\n"
+    // Find the end of headers ("\r\n\r\n")
+    const char* headerDelimiter = "\r\n\r\n";
+    auto endOfHeaders = std::search(
+        requestBuffer.begin(),
+        requestBuffer.begin() + totalBytesRead,
+        headerDelimiter,
+        headerDelimiter + 4
+    );
+    std::string body;
+    if (endOfHeaders != requestBuffer.begin() + totalBytesRead) {
+        // Calculate where the body starts
+        size_t bodyOffset = std::distance(requestBuffer.begin(), endOfHeaders) + 4;
+        if (bodyOffset < static_cast<size_t>(totalBytesRead)) {
+            body.assign(requestBuffer.data() + bodyOffset, totalBytesRead - bodyOffset);
+        }
+    }
     request.setBody(body);
-
+    
     struct sockaddr_storage clientAddr;
     char clientIP[INET6_ADDRSTRLEN];
     if (clientAddr.ss_family == AF_INET)
