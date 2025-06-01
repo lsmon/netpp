@@ -31,6 +31,10 @@ std::string String::trim(const std::string &str)
     {
         trimmedStr.erase(0, 1);
     }
+    if (trimmedStr.at(trimmedStr.size() - 1) == '\r')
+    {
+        trimmedStr.erase(trimmedStr.size() - 1, 1);
+    }
     return trimmedStr;
 }
 

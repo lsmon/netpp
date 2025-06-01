@@ -244,9 +244,29 @@ std::optional<HttpRequest> HttpServer::readHttpRequest(int clientFd)
     if (endOfHeaders != requestBuffer.begin() + totalBytesRead) {
         // Calculate where the body starts
         size_t bodyOffset = std::distance(requestBuffer.begin(), endOfHeaders) + 4;
-        if (bodyOffset < static_cast<size_t>(totalBytesRead)) {
-            body.assign(requestBuffer.data() + bodyOffset, totalBytesRead - bodyOffset);
+        // Check if Content-Length header is present to determine body size
+        auto contentLengthHeader = request.getHeaders()["content-length"].empty() ? 
+                                           request.getHeaders()["Content-Length"] : 
+                                           request.getHeaders()["content-length"];
+        size_t contentLength = 0;
+        if (!contentLengthHeader.empty()) {
+            contentLength = std::stoul(String::trim(contentLengthHeader));
         }
+
+        // Calculate how many bytes of the body have already been read
+        size_t alreadyReadBody = bodyOffset;
+
+        // If Content-Length is specified and we haven't read the full body, read the rest
+        while (alreadyReadBody < contentLength) {
+            int bytesToRead = std::min(static_cast<size_t>(MAX_REQUEST_SIZE) - totalBytesRead, contentLength - alreadyReadBody);
+            if (bytesToRead <= 0) break;
+            int bytesRead = read(clientFd, &requestBuffer[totalBytesRead], bytesToRead);
+            if (bytesRead <= 0) break;
+            totalBytesRead += bytesRead;
+            alreadyReadBody += bytesRead;
+        }
+        // Extract the body from the request buffer
+        body.assign(requestBuffer.data() + bodyOffset, totalBytesRead - bodyOffset);
     }
     request.setBody(body);
     
