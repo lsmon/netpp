@@ -33,7 +33,15 @@ endif()
 find_package(Threads REQUIRED)
 
 configure_file(config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/netppconfig.h)
-include(external/CMakeLists.txt)
+
+
+# Optionally allow the user to disable library building only
+option(BUILD_LIB "Build the testing tree." ON)
+
+message(STATUS "INFO -- BUILD_LIB: ${BUILD_LIB}")
+if(BUILD_LIB)
+    include(external/CMakeLists.txt)
+endif()
 include(http-server.cmake)
 include(http-client.cmake)
 

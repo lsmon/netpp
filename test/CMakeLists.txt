@@ -10,7 +10,7 @@ target_link_libraries(${PROJECT_NAME}_test PRIVATE
         ZLIB::ZLIB)
 target_include_directories(${PROJECT_NAME}_test PUBLIC 
         ${OPENSSL_INCLUDE_DIR} 
-        ${JSON_INC} 
+        ${JSON_INC}
         ${LOGPP_INC}
         _${LIB_NAME_SERVER}
         _${LIB_NAME_CLIENT})

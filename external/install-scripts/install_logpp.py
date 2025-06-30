@@ -85,7 +85,7 @@ def cpack_logpp():
     logpp_build = os.path.join(logpp_path, "build")
     os.chdir(logpp_build)
     if os_type == "linux":
-        cpack = "/usr/bin/cpack"
+        cpack = "cpack"
     elif os_type == "Darwin":
         cpack = "/opt/homebrew/bin/cpack"
     else:
