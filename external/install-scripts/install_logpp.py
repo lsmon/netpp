@@ -64,17 +64,16 @@ def build_logpp():
     os.chdir(logpp_path)
     os.makedirs(logpp_build, exist_ok=True)
 
-    # run_command("cmake -S " + logpp_path + " -B " + logpp_build)
-    # run_command("cmake --build " + logpp_build + " -j 14")
     cmake_bin = ""
+    compiler_flag = ""
     if os_type == "darwin": 
-        cmake_bin = "/opt/homebrew/bin/cmake"
+        cmake_bin = "/usr/local/bin/cmake"
+        compiler_flag = "-DCMAKE_C_COMPILER:FILEPATH=/usr/bin/clang -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/clang++"
     else :
         cmake_bin = "cmake"
-    print(cmake_bin + " --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -S" + logpp_path + " -B" + logpp_build)
-    print(cmake_bin + " --build " + logpp_build + " --config Debug --target all -j 12")
-    run_command(cmake_bin + " --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -S" + logpp_path + " -B" + logpp_build)
-    run_command(cmake_bin + " --build " + logpp_build + " --config Debug --target all -j 12")
+
+    run_command(cmake_bin + " -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE " + compiler_flag + " --no-warn-unused-cli -S" + logpp_path + " -B" + logpp_build + " -G Ninja")
+    run_command(cmake_bin + " --build " + logpp_build + " --config Debug --target all")
 
     print("Building completed.")
 

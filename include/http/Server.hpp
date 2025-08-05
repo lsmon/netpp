@@ -27,8 +27,8 @@ enum WebSocketOpcode {
 };
 
 // Define named constants for magic numbers
-const int MAX_REQUEST_SIZE = 8192;
-const int MAX_FRAME_SIZE = 8192;
+const int MAX_REQUEST_SIZE = 8192 * 5;
+const int MAX_FRAME_SIZE = 8192 * 5;
 const int MAX_7BIT_PAYLOAD_LENGTH = 125;
 const int EXTENDED_PAYLOAD_16BIT = 126;
 const int EXTENDED_PAYLOAD_64BIT = 127;

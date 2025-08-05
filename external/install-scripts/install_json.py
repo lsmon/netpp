@@ -64,16 +64,16 @@ def build_json():
     os.chdir(json_path)
     os.makedirs(json_build, exist_ok=True)
 
-    print("cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -S" + json_path + " -B" + json_build)
-    print("cmake --build " + json_build + " --config Debug --target all -j 12 --")
-    cmake_bin = "";
+    cmake_bin = ""
+    compiler_flag = ""
     if os_type == "darwin": 
         cmake_bin = "/opt/homebrew/bin/cmake"
+        compiler_flag = "-DCMAKE_C_COMPILER:FILEPATH=/usr/bin/clang -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/clang++"
     else :
         cmake_bin = "cmake"
     
-    run_command((cmake_bin + " --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -S" + json_path + " -B" + json_build))
-    run_command(cmake_bin + " --build " + json_build + " --config Debug --target all -j 12 --")
+    run_command(cmake_bin + " --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE " + compiler_flag + " -S" + json_path + " -B" + json_build)
+    run_command(cmake_bin + " --build " + json_build + " --config Debug --target all")
     print("Building completed.")
 
 

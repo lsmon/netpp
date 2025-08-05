@@ -30,7 +30,7 @@ enum CODES
     TEMPORARY_REDIRECT = 307,
     PERMANENT_REDIRECT = 308,
     BAD_REQUEAST = 400,
-    UNAUTHORIZE = 401,
+    UNAUTHORIZED = 401,
     PAYMENT_REQUIRED = 402,
     FORBIDDEN = 403,
     NOT_FOUND = 404,
@@ -150,7 +150,7 @@ struct Status
         case BAD_REQUEAST:
             ss << "Code: [" << c << "] Message: bad requeast";
             break;
-        case UNAUTHORIZE:
+        case UNAUTHORIZED:
             ss << "Code: [" << c << "] Message: unauthorize";
             break;
         case PAYMENT_REQUIRED:

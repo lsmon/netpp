@@ -97,6 +97,7 @@ void HttpServer::runWorker(int serverFd)
             catch (const std::exception &e)
             {
                 std::cerr << "Error handling connection: " << e.what() << std::endl;
+                throw std::runtime_error(e.what());
             }
             releaseConnection();
         }).detach();
@@ -166,7 +167,7 @@ void HttpServer::handleConnection(int clientFd)
 
 std::optional<HttpRequest> HttpServer::readHttpRequest(int clientFd)
 {
-    const int MAX_REQUEST_SIZE = 8192; // Maximum size of the request buffer
+    // const int MAX_REQUEST_SIZE = 8192; // Maximum size of the request buffer
     std::vector<char> requestBuffer(MAX_REQUEST_SIZE, 0);
     int totalBytesRead = 0;
 
@@ -481,7 +482,7 @@ std::vector<uint8_t> HttpServer::serializeWebSocketFrame(const WebSocketFrame &f
 
 bool HttpServer::readWebSocketFrame(int clientFd, WebSocketFrame &frame) 
 {
-    const int MAX_FRAME_SIZE = 8192; // Maximum size of a WebSocket frame
+    // const int MAX_FRAME_SIZE = 8192; // Maximum size of a WebSocket frame
     unsigned char frameBuffer[MAX_FRAME_SIZE];
 
     // Read WebSocket frame header
